@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileForensiq", "FileForensiq\FileForensiq.csproj", "{10BB80A2-F9E2-41F5-9866-3B6B043319EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10BB80A2-F9E2-41F5-9866-3B6B043319EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10BB80A2-F9E2-41F5-9866-3B6B043319EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10BB80A2-F9E2-41F5-9866-3B6B043319EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10BB80A2-F9E2-41F5-9866-3B6B043319EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6448A26F-CC60-46AA-938D-96B06E7A6C4E}
+	EndGlobalSection
+EndGlobal
