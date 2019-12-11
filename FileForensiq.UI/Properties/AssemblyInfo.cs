@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FileForensiq")]
+[assembly: AssemblyTitle("FileForensiq.UI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FileForensiq")]
+[assembly: AssemblyProduct("FileForensiq.UI")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("10bb80a2-f9e2-41f5-9866-3b6b043319ee")]
+[assembly: Guid("858d86f5-f134-4b66-b544-a6b9036c1dfd")]
 
 // Version information for an assembly consists of the following four values:
 //

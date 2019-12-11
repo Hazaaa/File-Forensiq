@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FileForensiq.Properties
+namespace FileForensiq.UI.Properties
 {
 
 
