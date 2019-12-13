@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnSearch = new System.Windows.Forms.Button();
             this.lblResultStats = new System.Windows.Forms.Label();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.tvFileSystem = new System.Windows.Forms.TreeView();
             this.cbxDriveLetters = new System.Windows.Forms.ComboBox();
             this.pbxLoading = new System.Windows.Forms.PictureBox();
+            this.imglFilesIcons = new System.Windows.Forms.ImageList(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,12 +59,15 @@
             this.lblResultStats.Text = "Search result stats";
             this.lblResultStats.Visible = false;
             // 
-            // treeView1
+            // tvFileSystem
             // 
-            this.treeView1.Location = new System.Drawing.Point(12, 71);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(419, 333);
-            this.treeView1.TabIndex = 2;
+            this.tvFileSystem.ImageIndex = 0;
+            this.tvFileSystem.ImageList = this.imglFilesIcons;
+            this.tvFileSystem.Location = new System.Drawing.Point(12, 71);
+            this.tvFileSystem.Name = "tvFileSystem";
+            this.tvFileSystem.SelectedImageIndex = 0;
+            this.tvFileSystem.Size = new System.Drawing.Size(419, 333);
+            this.tvFileSystem.TabIndex = 2;
             // 
             // cbxDriveLetters
             // 
@@ -72,6 +77,7 @@
             this.cbxDriveLetters.Name = "cbxDriveLetters";
             this.cbxDriveLetters.Size = new System.Drawing.Size(65, 21);
             this.cbxDriveLetters.TabIndex = 3;
+            this.cbxDriveLetters.Click += new System.EventHandler(this.cbxDriveLetters_Click);
             // 
             // pbxLoading
             // 
@@ -85,6 +91,52 @@
             this.pbxLoading.TabStop = false;
             this.pbxLoading.Visible = false;
             // 
+            // imglFilesIcons
+            // 
+            this.imglFilesIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imglFilesIcons.ImageStream")));
+            this.imglFilesIcons.TransparentColor = System.Drawing.Color.Transparent;
+            this.imglFilesIcons.Images.SetKeyName(0, "file.png");
+            this.imglFilesIcons.Images.SetKeyName(1, "folder.png");
+            this.imglFilesIcons.Images.SetKeyName(2, "harddisk.png");
+            this.imglFilesIcons.Images.SetKeyName(3, "ai.png");
+            this.imglFilesIcons.Images.SetKeyName(4, "avi.png");
+            this.imglFilesIcons.Images.SetKeyName(5, "css.png");
+            this.imglFilesIcons.Images.SetKeyName(6, "csv.png");
+            this.imglFilesIcons.Images.SetKeyName(7, "dbf.png");
+            this.imglFilesIcons.Images.SetKeyName(8, "docx.png");
+            this.imglFilesIcons.Images.SetKeyName(9, "dwg.png");
+            this.imglFilesIcons.Images.SetKeyName(10, "exe.png");
+            this.imglFilesIcons.Images.SetKeyName(11, "fla.png");
+            this.imglFilesIcons.Images.SetKeyName(12, "html.png");
+            this.imglFilesIcons.Images.SetKeyName(13, "iso.png");
+            this.imglFilesIcons.Images.SetKeyName(14, "js.png");
+            this.imglFilesIcons.Images.SetKeyName(15, "jpg.png");
+            this.imglFilesIcons.Images.SetKeyName(16, "json.png");
+            this.imglFilesIcons.Images.SetKeyName(17, "mp3.png");
+            this.imglFilesIcons.Images.SetKeyName(18, "mp4.png");
+            this.imglFilesIcons.Images.SetKeyName(19, "pdf.png");
+            this.imglFilesIcons.Images.SetKeyName(20, "png.png");
+            this.imglFilesIcons.Images.SetKeyName(21, "pptx.png");
+            this.imglFilesIcons.Images.SetKeyName(22, "psd.png");
+            this.imglFilesIcons.Images.SetKeyName(23, "rtf.png");
+            this.imglFilesIcons.Images.SetKeyName(24, "svg.png");
+            this.imglFilesIcons.Images.SetKeyName(25, "txt.png");
+            this.imglFilesIcons.Images.SetKeyName(26, "xlsx.png");
+            this.imglFilesIcons.Images.SetKeyName(27, "xml.png");
+            this.imglFilesIcons.Images.SetKeyName(28, "zip.png");
+            this.imglFilesIcons.Images.SetKeyName(29, "cpp.png");
+            this.imglFilesIcons.Images.SetKeyName(30, "as.png");
+            this.imglFilesIcons.Images.SetKeyName(31, "dtd.png");
+            this.imglFilesIcons.Images.SetKeyName(32, "tsx.png");
+            this.imglFilesIcons.Images.SetKeyName(33, "ts.png");
+            this.imglFilesIcons.Images.SetKeyName(34, "sql.png");
+            this.imglFilesIcons.Images.SetKeyName(35, "php.png");
+            this.imglFilesIcons.Images.SetKeyName(36, "sass.png");
+            this.imglFilesIcons.Images.SetKeyName(37, "jsx.png");
+            this.imglFilesIcons.Images.SetKeyName(38, "jsp.png");
+            this.imglFilesIcons.Images.SetKeyName(39, "delphi.png");
+            this.imglFilesIcons.Images.SetKeyName(40, "mkv.png");
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -93,7 +145,7 @@
             this.ClientSize = new System.Drawing.Size(747, 416);
             this.Controls.Add(this.pbxLoading);
             this.Controls.Add(this.cbxDriveLetters);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.tvFileSystem);
             this.Controls.Add(this.lblResultStats);
             this.Controls.Add(this.btnSearch);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -112,9 +164,10 @@
 
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Label lblResultStats;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView tvFileSystem;
         private System.Windows.Forms.ComboBox cbxDriveLetters;
         private System.Windows.Forms.PictureBox pbxLoading;
+        private System.Windows.Forms.ImageList imglFilesIcons;
     }
 }
 
