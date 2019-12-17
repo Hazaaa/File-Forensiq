@@ -42,8 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FilesManipulation.cs" />
-    <Compile Include="Interfaces\IFilesManipulation.cs" />
+    <Compile Include="FileSystemManipulation.cs" />
+    <Compile Include="Interfaces\IFileSystemManipulation.cs" />
+    <Compile Include="Models\DirectoryTreeNode.cs" />
     <Compile Include="Models\PartitionProcessingResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

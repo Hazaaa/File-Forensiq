@@ -10,29 +10,29 @@ using System.Windows.Forms;
 
 namespace FileForensiq.Core
 {
-    public class FilesManipulation : IFilesManipulation
+    public class FileSystemManipulation : IFileSystemManipulation
     {
         private readonly object syncLock = new object();
 
-        public FilesManipulation(){}
+        public FileSystemManipulation(){}
 
         /// <summary>
         /// Returns files tree (from root path) that are used in TreeView control.
         /// </summary>
         /// <param name="rootPath">Root path from which processing starts.</param>
         /// <returns>PartitionProcessingResult object with all files full names and number of errors.</returns>
-        public PartitionProcessingResult GetFilesTree(string rootPath)
+        public PartitionProcessingResult GetPartitionFileTree(string rootPath, bool includeFiles = false)
         {
             PartitionProcessingResult result = new PartitionProcessingResult();
-            ConcurrentStack<TreeNode> fileTreeNodeStack = new ConcurrentStack<TreeNode>();
+            ConcurrentStack<DirectoryTreeNode> fileTreeNodeStack = new ConcurrentStack<DirectoryTreeNode>();
 
             var rootDirectory = new DirectoryInfo(rootPath);
-            var rootNode = new TreeNode(rootDirectory.Name) { Tag = rootDirectory };
+            var rootNode = new DirectoryTreeNode(rootDirectory.Name) { Tag = rootDirectory };
 
             fileTreeNodeStack.Push(rootNode);
-            result.NumberOfFiles++;
+            result.NumberOfReturnedResults++;
 
-            TreeNode currentNode;
+            DirectoryTreeNode currentNode;
             while (fileTreeNodeStack.Count > 0)
             {
                 try
@@ -40,38 +40,42 @@ namespace FileForensiq.Core
                     fileTreeNodeStack.TryPop(out currentNode);
                     var currentNodeInfo = (DirectoryInfo)currentNode.Tag;
 
-                    Parallel.ForEach(currentNodeInfo.GetDirectories(), childDirectory =>
+                    Parallel.ForEach(currentNodeInfo.EnumerateDirectories(), childDirectory =>
                     {
-                        var childNode = new TreeNode(childDirectory.Name)
+                        var childNode = new DirectoryTreeNode(childDirectory.Name)
                         {
                             Tag = childDirectory,
                             ImageKey = "folder.png",
-                            SelectedImageKey = "folder.png"
+                            SelectedImageKey = "folder.png",
                         };
 
-                        lock(syncLock)
+                        // This kills performance (but it's needed so there is no aditional tree sorting)
+                        lock (syncLock) 
                         {
                             currentNode.Nodes.Add(childNode);
-                            result.NumberOfFiles++;
+                            result.NumberOfReturnedResults++;
                         }
                         
                         fileTreeNodeStack.Push(childNode);
                     });
 
-                    Parallel.ForEach(currentNodeInfo.GetFiles(), file =>
+                    if(includeFiles)
                     {
-                        var iconName = GetFileIcon(file.Extension);
-                        lock (syncLock)
+                        Parallel.ForEach(currentNodeInfo.EnumerateFiles(), file =>
                         {
-                            currentNode.Nodes.Add(new TreeNode(file.Name) 
-                            { 
-                                Tag = file,
-                                ImageKey = iconName,
-                                SelectedImageKey = iconName
-                            });
-                            result.NumberOfFiles++;
-                        }
-                    });
+                            var iconName = GetFileIcon(file.Extension);
+                            lock (syncLock)
+                            {
+                                currentNode.Nodes.Add(new TreeNode(file.Name)
+                                {
+                                    Tag = file,
+                                    ImageKey = iconName,
+                                    SelectedImageKey = iconName
+                                });
+                                result.NumberOfReturnedResults++;
+                            }
+                        });
+                    }
                 }
                 catch (UnauthorizedAccessException ex)
                 {

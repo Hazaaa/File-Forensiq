@@ -9,9 +9,9 @@ namespace FileForensiq.Core.Models
         /// <summary>
         /// Root node with all his children.
         /// </summary>
-        public TreeNode RootNode { get; set; }
+        public DirectoryTreeNode RootNode { get; set; }
 
-        public int NumberOfFiles { get; set; }
+        public int NumberOfReturnedResults { get; set; }
 
         /// <summary>
         /// Number of Unauthorized errors while trying to access directories and files.
@@ -23,7 +23,7 @@ namespace FileForensiq.Core.Models
         {
             UnauthorizedErrors = 0;
             OtherErrors = 0;
-            NumberOfFiles = 0;
+            NumberOfReturnedResults = 0;
         }
     }
 }
