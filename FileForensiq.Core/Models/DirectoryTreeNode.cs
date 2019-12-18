@@ -11,7 +11,7 @@ namespace FileForensiq.Core.Models
     {
         public DirectoryTreeNode(string displayText) : base(displayText)
         {
-
+            Size = 0;
         }
 
         /// <summary>

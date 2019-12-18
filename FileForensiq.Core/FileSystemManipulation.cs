@@ -12,8 +12,6 @@ namespace FileForensiq.Core
 {
     public class FileSystemManipulation : IFileSystemManipulation
     {
-        private readonly object syncLock = new object();
-
         public FileSystemManipulation(){}
 
         /// <summary>
@@ -24,7 +22,7 @@ namespace FileForensiq.Core
         public PartitionProcessingResult GetPartitionFileTree(string rootPath, bool includeFiles = false)
         {
             PartitionProcessingResult result = new PartitionProcessingResult();
-            ConcurrentStack<DirectoryTreeNode> fileTreeNodeStack = new ConcurrentStack<DirectoryTreeNode>();
+            Stack<DirectoryTreeNode> fileTreeNodeStack = new Stack<DirectoryTreeNode>();
 
             var rootDirectory = new DirectoryInfo(rootPath);
             var rootNode = new DirectoryTreeNode(rootDirectory.Name) { Tag = rootDirectory };
@@ -37,10 +35,10 @@ namespace FileForensiq.Core
             {
                 try
                 {
-                    fileTreeNodeStack.TryPop(out currentNode);
+                    currentNode = fileTreeNodeStack.Pop();
                     var currentNodeInfo = (DirectoryInfo)currentNode.Tag;
 
-                    Parallel.ForEach(currentNodeInfo.EnumerateDirectories(), childDirectory =>
+                    foreach(var childDirectory in currentNodeInfo.EnumerateDirectories())
                     {
                         var childNode = new DirectoryTreeNode(childDirectory.Name)
                         {
@@ -49,32 +47,26 @@ namespace FileForensiq.Core
                             SelectedImageKey = "folder.png",
                         };
 
-                        // This kills performance (but it's needed so there is no aditional tree sorting)
-                        lock (syncLock) 
-                        {
-                            currentNode.Nodes.Add(childNode);
-                            result.NumberOfReturnedResults++;
-                        }
-                        
+                        currentNode.Nodes.Add(childNode);
+                        result.NumberOfReturnedResults++;
+
                         fileTreeNodeStack.Push(childNode);
-                    });
+                    };
 
                     if(includeFiles)
                     {
-                        Parallel.ForEach(currentNodeInfo.EnumerateFiles(), file =>
+                        foreach(var file in currentNodeInfo.EnumerateFiles())
                         {
                             var iconName = GetFileIcon(file.Extension);
-                            lock (syncLock)
+                            currentNode.Nodes.Add(new TreeNode(file.Name)
                             {
-                                currentNode.Nodes.Add(new TreeNode(file.Name)
-                                {
-                                    Tag = file,
-                                    ImageKey = iconName,
-                                    SelectedImageKey = iconName
-                                });
-                                result.NumberOfReturnedResults++;
-                            }
-                        });
+                                Tag = file,
+                                ImageKey = iconName,
+                                SelectedImageKey = iconName
+                            });
+                            currentNode.Size += file.Length;
+                            result.NumberOfReturnedResults++;
+                        };
                     }
                 }
                 catch (UnauthorizedAccessException ex)
@@ -90,8 +82,50 @@ namespace FileForensiq.Core
                     continue;
                 }
             }
+            CalculateDirectorySize(rootNode);
             result.RootNode = rootNode;
             return result;
+        }
+
+        /// <summary>
+        /// Calculates size for every dictionary in bytes.
+        /// </summary>
+        /// <param name="rootNode">Root node.</param>
+        public long CalculateDirectorySize(DirectoryTreeNode rootNode)
+        {
+            if(rootNode == null)
+            {
+                return 0;
+            }
+
+            foreach (var directory in rootNode.Nodes)
+            {
+                if(directory is DirectoryTreeNode)
+                {
+                    rootNode.Size += CalculateDirectorySize((DirectoryTreeNode)directory);
+                }
+            }
+
+            // Displaying size of files in KB, MB, GB or TB
+            var rootSize = ((rootNode.Size) / 1024f) / 1024f;
+            if (rootSize < 1.0)
+            {
+                rootNode.Text += " (" + (rootNode.Size) / 1024f + " KB)";
+            }
+            else if(rootSize > 1000)
+            {
+                rootNode.Text += " (" + rootSize / 1000f + " GB)";
+            } 
+            else if(rootSize > 1000000)
+            {
+                rootNode.Text += " (" + (rootSize / 953674f) + " TB)";
+            } 
+            else
+            {
+                rootNode.Text += " (" + rootSize + " MB)";
+            }
+
+            return rootNode.Size;
         }
 
         /// <summary>

@@ -41,7 +41,9 @@
             this.lblMemoryUsage = new System.Windows.Forms.Label();
             this.lblMemoryMB = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
+            this.pbxLoadingTreeView = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbxLoadingTreeView)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSearch
@@ -187,12 +189,25 @@
             // 
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
+            // pbxLoadingTreeView
+            // 
+            this.pbxLoadingTreeView.BackColor = System.Drawing.Color.Transparent;
+            this.pbxLoadingTreeView.Image = global::FileForensiq.UI.Properties.Resources.LoadingGif;
+            this.pbxLoadingTreeView.Location = new System.Drawing.Point(192, 232);
+            this.pbxLoadingTreeView.Name = "pbxLoadingTreeView";
+            this.pbxLoadingTreeView.Size = new System.Drawing.Size(44, 26);
+            this.pbxLoadingTreeView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pbxLoadingTreeView.TabIndex = 9;
+            this.pbxLoadingTreeView.TabStop = false;
+            this.pbxLoadingTreeView.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(817, 448);
+            this.Controls.Add(this.pbxLoadingTreeView);
             this.Controls.Add(this.lblMemoryMB);
             this.Controls.Add(this.lblMemoryUsage);
             this.Controls.Add(this.cbxSortBy);
@@ -210,6 +225,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbxLoadingTreeView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -228,6 +244,7 @@
         private System.Windows.Forms.Label lblMemoryUsage;
         private System.Windows.Forms.Label lblMemoryMB;
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.PictureBox pbxLoadingTreeView;
     }
 }
 

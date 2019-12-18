@@ -44,7 +44,7 @@ namespace FileForensiq.UI
 
             // With Task.Run UI is still responsive while data is being collected
             string selectedDrive = cbxPartitionLetters.SelectedItem?.ToString();
-            var files = await Task.Run(() => filesManipulation.GetPartitionFileTree(selectedDrive));
+            var files = await Task.Run(() => filesManipulation.GetPartitionFileTree(selectedDrive, true));
 
             stopWatch.Stop();
 
