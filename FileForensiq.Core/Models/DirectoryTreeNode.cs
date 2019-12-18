@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 namespace FileForensiq.Core.Models
 {
+    [Serializable]
     public class DirectoryTreeNode : TreeNode
     {
         public DirectoryTreeNode(string displayText) : base(displayText)
