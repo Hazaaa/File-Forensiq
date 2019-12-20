@@ -55,7 +55,9 @@ namespace FileForensiq.Core
 
                     if(includeFiles)
                     {
-                        foreach(var file in currentNodeInfo.EnumerateFiles())
+                        var directoryFiles = currentNodeInfo.EnumerateFiles();
+                        currentNode.NumberOfFiles += directoryFiles.Count();
+                        foreach(var file in directoryFiles)
                         {
                             var iconName = GetFileIcon(file.Extension);
                             currentNode.Nodes.Add(new TreeNode(file.Name)
@@ -83,6 +85,7 @@ namespace FileForensiq.Core
                 }
             }
             CalculateDirectorySize(rootNode);
+            CalculateNumberOfFiles(rootNode);
             result.RootNode = rootNode;
             return result;
         }
@@ -129,6 +132,28 @@ namespace FileForensiq.Core
         }
 
         /// <summary>
+        /// Calculates number of files for every dictionary including files in his sub-directories.
+        /// </summary>
+        /// <param name="rootNode">Root node.</param>
+        public int CalculateNumberOfFiles(DirectoryTreeNode rootNode)
+        {
+            if (rootNode == null)
+            {
+                return 0;
+            }
+
+            foreach (var directory in rootNode.Nodes)
+            {
+                if (directory is DirectoryTreeNode)
+                {
+                    rootNode.NumberOfFiles += CalculateNumberOfFiles((DirectoryTreeNode)directory);
+                }
+            }
+
+            return rootNode.NumberOfFiles;
+        }
+
+        /// <summary>
         /// Returns correct icon given file extension if exists or it will be shown default file icon.
         /// </summary>
         /// <param name="extension">File extension.</param>
@@ -136,6 +161,24 @@ namespace FileForensiq.Core
         public string GetFileIcon(string extension)
         {
             return String.IsNullOrEmpty(extension) ? "folder.png" : extension.Replace(".", string.Empty).Trim() + ".png";
+        }
+
+
+        public void OpenFile(TreeNode file)
+        {
+            string path = "";
+            if(file is DirectoryTreeNode)
+            {
+                var tag = (DirectoryInfo)file.Tag;
+                path = tag.FullName;
+            }
+            else
+            {
+                var tag = (FileInfo)file.Tag;
+                path = tag.FullName;
+            }
+
+            System.Diagnostics.Process.Start(path);
         }
     }
 }

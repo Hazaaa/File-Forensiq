@@ -12,6 +12,7 @@ namespace FileForensiq.UI
     public partial class MainForm : Form
     {
         private readonly FileSystemManipulation filesManipulation;
+        private bool sortDescending = false;
 
         public MainForm()
         {
@@ -23,12 +24,19 @@ namespace FileForensiq.UI
         {
             FormHelper.SetPartitionLettersCombobox(cbxPartitionLetters);
             timer.Start();
+            tvFileSystem.TreeViewNodeSorter = new TreeNodeSorter();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            timer.Start();
+            timer.Stop();
             timer.Dispose();
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            long memoryUsage = (Process.GetCurrentProcess().PrivateMemorySize64 / 1024) / 1024;
+            lblMemoryMB.Text = String.Format("~ {0} MB", memoryUsage.ToString());
         }
 
         private async void btnSearch_Click(object sender, EventArgs e)
@@ -38,6 +46,8 @@ namespace FileForensiq.UI
             pbxLoading.Visible = true;
             lblResultStats.Visible = false;
             tvFileSystem.Nodes.Clear();
+            cbxSortBy.Enabled = false;
+            lblSortArrow.Visible = false;
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -53,6 +63,8 @@ namespace FileForensiq.UI
             {
                 lblResultStats.Text = String.Format("Time: {0}. Files Collected: {1}. Unauthorized Errors: {2}. Other Errors: {3}.", stopWatch.Elapsed, files.NumberOfReturnedResults, files.UnauthorizedErrors, files.OtherErrors);
                 lblResultStats.Visible = true;
+                cbxSortBy.Enabled = true;
+                lblSortArrow.Visible = true;
 
                 files.RootNode.ImageKey = "harddisk.png";
                 files.RootNode.SelectedImageKey = "harddisk.png";
@@ -71,35 +83,34 @@ namespace FileForensiq.UI
             FormHelper.SetPartitionLettersCombobox(cbxPartitionLetters);
         }
 
-        private async void cbxSortBy_SelectedIndexChanged(object sender, EventArgs e)
+        private void cbxSortBy_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(tvFileSystem.Nodes.Count != 0)
+            if (tvFileSystem.Nodes.Count != 0)
             {
-                switch (cbxSortBy.SelectedIndex)
+                FormHelper.SortTreeView(cbxSortBy, tvFileSystem, sortDescending);
+            }
+        }
+
+        private void lblSortArrow_Click(object sender, EventArgs e)
+        {
+            if(cbxSortBy.SelectedIndex != -1)
+            {
+                if (lblSortArrow.Text == "↓")
                 {
-                    // Sort by name
-                    case 0:
-                        await Task.Run(() => tvFileSystem.Invoke((MethodInvoker)(() => tvFileSystem.Sort())));
-                        break;
-
-                    // Sort by size
-                    case 1:
-                        break;
-
-                    // Sorty by number of files
-                    case 2:
-                        break;
-
-                    default:
-                        break;
+                    sortDescending = true;
+                    lblSortArrow.Text = "↑";
+                }
+                else
+                {
+                    sortDescending = false;
+                    lblSortArrow.Text = "↓";
                 }
             }
         }
 
-        private void timer_Tick(object sender, EventArgs e)
+        private void tvFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            long memoryUsage = (Process.GetCurrentProcess().PrivateMemorySize64/1024)/1024;
-            lblMemoryMB.Text = String.Format("~ {0} MB", memoryUsage.ToString());
+            filesManipulation.OpenFile(tvFileSystem.SelectedNode);
         }
     }
 }

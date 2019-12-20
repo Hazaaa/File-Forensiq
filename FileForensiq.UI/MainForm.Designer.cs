@@ -35,15 +35,22 @@
             this.tvFileSystem = new System.Windows.Forms.TreeView();
             this.imglFilesIcons = new System.Windows.Forms.ImageList(this.components);
             this.cbxPartitionLetters = new System.Windows.Forms.ComboBox();
-            this.pbxLoading = new System.Windows.Forms.PictureBox();
             this.lblSort = new System.Windows.Forms.Label();
             this.cbxSortBy = new System.Windows.Forms.ComboBox();
             this.lblMemoryUsage = new System.Windows.Forms.Label();
             this.lblMemoryMB = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
-            this.pbxLoadingTreeView = new System.Windows.Forms.PictureBox();
+            this.lblSortArrow = new System.Windows.Forms.Label();
+            this.pbxLoading = new System.Windows.Forms.PictureBox();
+            this.btnSettings = new System.Windows.Forms.Button();
+            this.btnErrorLog = new System.Windows.Forms.Button();
+            this.pnlFolderDetails = new System.Windows.Forms.Panel();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.pbxFilePicture = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbxLoadingTreeView)).BeginInit();
+            this.pnlFolderDetails.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbxFilePicture)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSearch
@@ -75,6 +82,7 @@
             this.tvFileSystem.SelectedImageIndex = 0;
             this.tvFileSystem.Size = new System.Drawing.Size(419, 333);
             this.tvFileSystem.TabIndex = 2;
+            this.tvFileSystem.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvFileSystem_NodeMouseDoubleClick);
             // 
             // imglFilesIcons
             // 
@@ -121,6 +129,8 @@
             this.imglFilesIcons.Images.SetKeyName(38, "jsp.png");
             this.imglFilesIcons.Images.SetKeyName(39, "delphi.png");
             this.imglFilesIcons.Images.SetKeyName(40, "mkv.png");
+            this.imglFilesIcons.Images.SetKeyName(41, "log.png");
+            this.imglFilesIcons.Images.SetKeyName(42, "settings.png");
             // 
             // cbxPartitionLetters
             // 
@@ -131,18 +141,6 @@
             this.cbxPartitionLetters.Size = new System.Drawing.Size(65, 21);
             this.cbxPartitionLetters.TabIndex = 3;
             this.cbxPartitionLetters.Click += new System.EventHandler(this.cbxPartitionLetters_Click);
-            // 
-            // pbxLoading
-            // 
-            this.pbxLoading.BackColor = System.Drawing.Color.Transparent;
-            this.pbxLoading.Image = global::FileForensiq.UI.Properties.Resources.LoadingGif;
-            this.pbxLoading.Location = new System.Drawing.Point(171, 9);
-            this.pbxLoading.Name = "pbxLoading";
-            this.pbxLoading.Size = new System.Drawing.Size(44, 26);
-            this.pbxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pbxLoading.TabIndex = 4;
-            this.pbxLoading.TabStop = false;
-            this.pbxLoading.Visible = false;
             // 
             // lblSort
             // 
@@ -156,11 +154,15 @@
             // cbxSortBy
             // 
             this.cbxSortBy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxSortBy.Enabled = false;
             this.cbxSortBy.FormattingEnabled = true;
             this.cbxSortBy.Items.AddRange(new object[] {
             "Name",
             "Size",
-            "Number of Files"});
+            "Number of Files",
+            "Time Created",
+            "Last Write",
+            "Last Access"});
             this.cbxSortBy.Location = new System.Drawing.Point(59, 66);
             this.cbxSortBy.Name = "cbxSortBy";
             this.cbxSortBy.Size = new System.Drawing.Size(100, 21);
@@ -170,7 +172,7 @@
             // lblMemoryUsage
             // 
             this.lblMemoryUsage.AutoSize = true;
-            this.lblMemoryUsage.Location = new System.Drawing.Point(9, 431);
+            this.lblMemoryUsage.Location = new System.Drawing.Point(150, 437);
             this.lblMemoryUsage.Name = "lblMemoryUsage";
             this.lblMemoryUsage.Size = new System.Drawing.Size(79, 13);
             this.lblMemoryUsage.TabIndex = 7;
@@ -179,7 +181,7 @@
             // lblMemoryMB
             // 
             this.lblMemoryMB.AutoSize = true;
-            this.lblMemoryMB.Location = new System.Drawing.Point(87, 432);
+            this.lblMemoryMB.Location = new System.Drawing.Point(228, 438);
             this.lblMemoryMB.Name = "lblMemoryMB";
             this.lblMemoryMB.Size = new System.Drawing.Size(74, 13);
             this.lblMemoryMB.TabIndex = 8;
@@ -189,25 +191,85 @@
             // 
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
-            // pbxLoadingTreeView
+            // lblSortArrow
             // 
-            this.pbxLoadingTreeView.BackColor = System.Drawing.Color.Transparent;
-            this.pbxLoadingTreeView.Image = global::FileForensiq.UI.Properties.Resources.LoadingGif;
-            this.pbxLoadingTreeView.Location = new System.Drawing.Point(192, 232);
-            this.pbxLoadingTreeView.Name = "pbxLoadingTreeView";
-            this.pbxLoadingTreeView.Size = new System.Drawing.Size(44, 26);
-            this.pbxLoadingTreeView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pbxLoadingTreeView.TabIndex = 9;
-            this.pbxLoadingTreeView.TabStop = false;
-            this.pbxLoadingTreeView.Visible = false;
+            this.lblSortArrow.AutoSize = true;
+            this.lblSortArrow.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSortArrow.Location = new System.Drawing.Point(163, 66);
+            this.lblSortArrow.Name = "lblSortArrow";
+            this.lblSortArrow.Size = new System.Drawing.Size(17, 18);
+            this.lblSortArrow.TabIndex = 10;
+            this.lblSortArrow.Text = "↓";
+            this.lblSortArrow.Visible = false;
+            this.lblSortArrow.Click += new System.EventHandler(this.lblSortArrow_Click);
+            // 
+            // pbxLoading
+            // 
+            this.pbxLoading.BackColor = System.Drawing.Color.Transparent;
+            this.pbxLoading.Image = global::FileForensiq.UI.Properties.Resources.LoadingGif;
+            this.pbxLoading.Location = new System.Drawing.Point(171, 9);
+            this.pbxLoading.Name = "pbxLoading";
+            this.pbxLoading.Size = new System.Drawing.Size(44, 26);
+            this.pbxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pbxLoading.TabIndex = 4;
+            this.pbxLoading.TabStop = false;
+            this.pbxLoading.Visible = false;
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.Location = new System.Drawing.Point(12, 432);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(64, 23);
+            this.btnSettings.TabIndex = 11;
+            this.btnSettings.Text = "Settings";
+            this.btnSettings.UseVisualStyleBackColor = true;
+            // 
+            // btnErrorLog
+            // 
+            this.btnErrorLog.Location = new System.Drawing.Point(80, 432);
+            this.btnErrorLog.Name = "btnErrorLog";
+            this.btnErrorLog.Size = new System.Drawing.Size(64, 23);
+            this.btnErrorLog.TabIndex = 13;
+            this.btnErrorLog.Text = "Error Log";
+            this.btnErrorLog.UseVisualStyleBackColor = true;
+            // 
+            // pnlFolderDetails
+            // 
+            this.pnlFolderDetails.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.pnlFolderDetails.Controls.Add(this.pbxFilePicture);
+            this.pnlFolderDetails.Location = new System.Drawing.Point(444, 9);
+            this.pnlFolderDetails.Name = "pnlFolderDetails";
+            this.pnlFolderDetails.Size = new System.Drawing.Size(388, 111);
+            this.pnlFolderDetails.TabIndex = 14;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(446, 137);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(386, 288);
+            this.dataGridView1.TabIndex = 15;
+            // 
+            // pbxFilePicture
+            // 
+            this.pbxFilePicture.Location = new System.Drawing.Point(3, 3);
+            this.pbxFilePicture.Name = "pbxFilePicture";
+            this.pbxFilePicture.Size = new System.Drawing.Size(63, 57);
+            this.pbxFilePicture.TabIndex = 16;
+            this.pbxFilePicture.TabStop = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(817, 448);
-            this.Controls.Add(this.pbxLoadingTreeView);
+            this.ClientSize = new System.Drawing.Size(847, 463);
+            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.pnlFolderDetails);
+            this.Controls.Add(this.btnErrorLog);
+            this.Controls.Add(this.btnSettings);
+            this.Controls.Add(this.lblSortArrow);
             this.Controls.Add(this.lblMemoryMB);
             this.Controls.Add(this.lblMemoryUsage);
             this.Controls.Add(this.cbxSortBy);
@@ -225,7 +287,9 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbxLoadingTreeView)).EndInit();
+            this.pnlFolderDetails.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbxFilePicture)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -244,7 +308,12 @@
         private System.Windows.Forms.Label lblMemoryUsage;
         private System.Windows.Forms.Label lblMemoryMB;
         private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.PictureBox pbxLoadingTreeView;
+        private System.Windows.Forms.Label lblSortArrow;
+        private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Button btnErrorLog;
+        private System.Windows.Forms.Panel pnlFolderDetails;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.PictureBox pbxFilePicture;
     }
 }
 

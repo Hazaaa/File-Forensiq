@@ -13,11 +13,17 @@ namespace FileForensiq.Core.Models
         public DirectoryTreeNode(string displayText) : base(displayText)
         {
             Size = 0;
+            NumberOfFiles = 0;
         }
 
         /// <summary>
-        /// Directory size in MB.
+        /// Directory size in bytes.
         /// </summary>
         public long Size { get; set; }
+
+        /// <summary>
+        /// Number of files in directory including his sub-directories.
+        /// </summary>
+        public int NumberOfFiles { get; set; }
     }
 }

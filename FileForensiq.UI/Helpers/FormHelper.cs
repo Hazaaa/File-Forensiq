@@ -28,5 +28,56 @@ namespace FileForensiq.UI.Helpers
                 cbxPartitionLetters.SelectedIndex = 0;
             }
         }
+
+        public static void SortTreeView(ComboBox cbxSortBy, TreeView tvFileSystem, bool sortDescending)
+        {
+            switch (cbxSortBy.SelectedIndex)
+            {
+                // Sort by name
+                case 0:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.Name;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by size
+                case 1:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.Size;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by number of files
+                case 2:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.NumberOfFiles;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by time created
+                case 3:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.TimeCreated;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by last modify
+                case 4:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.TimeLastModified;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by last access
+                case 5:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.TimeLastAccessed;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                default:
+                    break;
+            }
+        }
     }
 }
