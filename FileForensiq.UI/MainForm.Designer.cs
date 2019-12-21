@@ -45,12 +45,28 @@
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnErrorLog = new System.Windows.Forms.Button();
             this.pnlFolderDetails = new System.Windows.Forms.Panel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.pbxFilePicture = new System.Windows.Forms.PictureBox();
+            this.lblFolderFileType = new System.Windows.Forms.Label();
+            this.lblTypeLabel = new System.Windows.Forms.Label();
+            this.lblFolderFileLastModify = new System.Windows.Forms.Label();
+            this.lblLastModifyLabel = new System.Windows.Forms.Label();
+            this.lblFileFolderLastAccess = new System.Windows.Forms.Label();
+            this.lblLastAccessLabel = new System.Windows.Forms.Label();
+            this.lblFolderFileCreated = new System.Windows.Forms.Label();
+            this.lblCreatedLabel = new System.Windows.Forms.Label();
+            this.lblFolderFileSize = new System.Windows.Forms.Label();
+            this.lblSizeLabel = new System.Windows.Forms.Label();
+            this.lblFolderFileName = new System.Windows.Forms.Label();
+            this.lblFolderFileLabel = new System.Windows.Forms.Label();
+            this.dgvFiles = new System.Windows.Forms.DataGridView();
+            this.colFileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colTimeCreated = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastAccess = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastModify = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
             this.pnlFolderDetails.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbxFilePicture)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSearch
@@ -82,6 +98,7 @@
             this.tvFileSystem.SelectedImageIndex = 0;
             this.tvFileSystem.Size = new System.Drawing.Size(419, 333);
             this.tvFileSystem.TabIndex = 2;
+            this.tvFileSystem.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvFileSystem_AfterSelect);
             this.tvFileSystem.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvFileSystem_NodeMouseDoubleClick);
             // 
             // imglFilesIcons
@@ -236,28 +253,221 @@
             // pnlFolderDetails
             // 
             this.pnlFolderDetails.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.pnlFolderDetails.Controls.Add(this.pbxFilePicture);
+            this.pnlFolderDetails.Controls.Add(this.lblFolderFileType);
+            this.pnlFolderDetails.Controls.Add(this.lblTypeLabel);
+            this.pnlFolderDetails.Controls.Add(this.lblFolderFileLastModify);
+            this.pnlFolderDetails.Controls.Add(this.lblLastModifyLabel);
+            this.pnlFolderDetails.Controls.Add(this.lblFileFolderLastAccess);
+            this.pnlFolderDetails.Controls.Add(this.lblLastAccessLabel);
+            this.pnlFolderDetails.Controls.Add(this.lblFolderFileCreated);
+            this.pnlFolderDetails.Controls.Add(this.lblCreatedLabel);
+            this.pnlFolderDetails.Controls.Add(this.lblFolderFileSize);
+            this.pnlFolderDetails.Controls.Add(this.lblSizeLabel);
+            this.pnlFolderDetails.Controls.Add(this.lblFolderFileName);
+            this.pnlFolderDetails.Controls.Add(this.lblFolderFileLabel);
             this.pnlFolderDetails.Location = new System.Drawing.Point(444, 9);
             this.pnlFolderDetails.Name = "pnlFolderDetails";
-            this.pnlFolderDetails.Size = new System.Drawing.Size(388, 111);
+            this.pnlFolderDetails.Size = new System.Drawing.Size(388, 118);
             this.pnlFolderDetails.TabIndex = 14;
             // 
-            // dataGridView1
+            // lblFolderFileType
             // 
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(446, 137);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(386, 288);
-            this.dataGridView1.TabIndex = 15;
+            this.lblFolderFileType.AutoSize = true;
+            this.lblFolderFileType.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFolderFileType.Location = new System.Drawing.Point(118, 63);
+            this.lblFolderFileType.Name = "lblFolderFileType";
+            this.lblFolderFileType.Size = new System.Drawing.Size(29, 15);
+            this.lblFolderFileType.TabIndex = 11;
+            this.lblFolderFileType.Text = "type";
+            this.lblFolderFileType.Visible = false;
             // 
-            // pbxFilePicture
+            // lblTypeLabel
             // 
-            this.pbxFilePicture.Location = new System.Drawing.Point(3, 3);
-            this.pbxFilePicture.Name = "pbxFilePicture";
-            this.pbxFilePicture.Size = new System.Drawing.Size(63, 57);
-            this.pbxFilePicture.TabIndex = 16;
-            this.pbxFilePicture.TabStop = false;
+            this.lblTypeLabel.AutoSize = true;
+            this.lblTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTypeLabel.Location = new System.Drawing.Point(67, 63);
+            this.lblTypeLabel.Name = "lblTypeLabel";
+            this.lblTypeLabel.Size = new System.Drawing.Size(41, 15);
+            this.lblTypeLabel.TabIndex = 10;
+            this.lblTypeLabel.Text = "Type:";
+            // 
+            // lblFolderFileLastModify
+            // 
+            this.lblFolderFileLastModify.AutoSize = true;
+            this.lblFolderFileLastModify.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFolderFileLastModify.Location = new System.Drawing.Point(267, 88);
+            this.lblFolderFileLastModify.Name = "lblFolderFileLastModify";
+            this.lblFolderFileLastModify.Size = new System.Drawing.Size(65, 15);
+            this.lblFolderFileLastModify.TabIndex = 9;
+            this.lblFolderFileLastModify.Text = "last modify";
+            this.lblFolderFileLastModify.Visible = false;
+            // 
+            // lblLastModifyLabel
+            // 
+            this.lblLastModifyLabel.AutoSize = true;
+            this.lblLastModifyLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLastModifyLabel.Location = new System.Drawing.Point(174, 88);
+            this.lblLastModifyLabel.Name = "lblLastModifyLabel";
+            this.lblLastModifyLabel.Size = new System.Drawing.Size(84, 15);
+            this.lblLastModifyLabel.TabIndex = 8;
+            this.lblLastModifyLabel.Text = "Last modify:";
+            // 
+            // lblFileFolderLastAccess
+            // 
+            this.lblFileFolderLastAccess.AutoSize = true;
+            this.lblFileFolderLastAccess.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFileFolderLastAccess.Location = new System.Drawing.Point(267, 63);
+            this.lblFileFolderLastAccess.Name = "lblFileFolderLastAccess";
+            this.lblFileFolderLastAccess.Size = new System.Drawing.Size(67, 15);
+            this.lblFileFolderLastAccess.TabIndex = 7;
+            this.lblFileFolderLastAccess.Text = "last access";
+            this.lblFileFolderLastAccess.Visible = false;
+            // 
+            // lblLastAccessLabel
+            // 
+            this.lblLastAccessLabel.AutoSize = true;
+            this.lblLastAccessLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLastAccessLabel.Location = new System.Drawing.Point(172, 63);
+            this.lblLastAccessLabel.Name = "lblLastAccessLabel";
+            this.lblLastAccessLabel.Size = new System.Drawing.Size(86, 15);
+            this.lblLastAccessLabel.TabIndex = 6;
+            this.lblLastAccessLabel.Text = "Last access:";
+            // 
+            // lblFolderFileCreated
+            // 
+            this.lblFolderFileCreated.AutoSize = true;
+            this.lblFolderFileCreated.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFolderFileCreated.Location = new System.Drawing.Point(267, 39);
+            this.lblFolderFileCreated.Name = "lblFolderFileCreated";
+            this.lblFolderFileCreated.Size = new System.Drawing.Size(48, 15);
+            this.lblFolderFileCreated.TabIndex = 5;
+            this.lblFolderFileCreated.Text = "created";
+            this.lblFolderFileCreated.Visible = false;
+            // 
+            // lblCreatedLabel
+            // 
+            this.lblCreatedLabel.AutoSize = true;
+            this.lblCreatedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCreatedLabel.Location = new System.Drawing.Point(197, 39);
+            this.lblCreatedLabel.Name = "lblCreatedLabel";
+            this.lblCreatedLabel.Size = new System.Drawing.Size(61, 15);
+            this.lblCreatedLabel.TabIndex = 4;
+            this.lblCreatedLabel.Text = "Created:";
+            // 
+            // lblFolderFileSize
+            // 
+            this.lblFolderFileSize.AutoSize = true;
+            this.lblFolderFileSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFolderFileSize.Location = new System.Drawing.Point(117, 39);
+            this.lblFolderFileSize.Name = "lblFolderFileSize";
+            this.lblFolderFileSize.Size = new System.Drawing.Size(29, 15);
+            this.lblFolderFileSize.TabIndex = 3;
+            this.lblFolderFileSize.Text = "size";
+            this.lblFolderFileSize.Visible = false;
+            // 
+            // lblSizeLabel
+            // 
+            this.lblSizeLabel.AutoSize = true;
+            this.lblSizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSizeLabel.Location = new System.Drawing.Point(70, 39);
+            this.lblSizeLabel.Name = "lblSizeLabel";
+            this.lblSizeLabel.Size = new System.Drawing.Size(39, 15);
+            this.lblSizeLabel.TabIndex = 2;
+            this.lblSizeLabel.Text = "Size:";
+            // 
+            // lblFolderFileName
+            // 
+            this.lblFolderFileName.AutoSize = true;
+            this.lblFolderFileName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFolderFileName.Location = new System.Drawing.Point(116, 14);
+            this.lblFolderFileName.Name = "lblFolderFileName";
+            this.lblFolderFileName.Size = new System.Drawing.Size(42, 16);
+            this.lblFolderFileName.TabIndex = 1;
+            this.lblFolderFileName.Text = "name";
+            this.lblFolderFileName.Visible = false;
+            // 
+            // lblFolderFileLabel
+            // 
+            this.lblFolderFileLabel.AutoSize = true;
+            this.lblFolderFileLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFolderFileLabel.Location = new System.Drawing.Point(13, 11);
+            this.lblFolderFileLabel.Name = "lblFolderFileLabel";
+            this.lblFolderFileLabel.Size = new System.Drawing.Size(99, 20);
+            this.lblFolderFileLabel.TabIndex = 0;
+            this.lblFolderFileLabel.Text = "Folder/File:";
+            // 
+            // dgvFiles
+            // 
+            this.dgvFiles.AllowUserToAddRows = false;
+            this.dgvFiles.AllowUserToDeleteRows = false;
+            this.dgvFiles.AllowUserToOrderColumns = true;
+            this.dgvFiles.AllowUserToResizeRows = false;
+            this.dgvFiles.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dgvFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvFiles.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colFileName,
+            this.colType,
+            this.colLength,
+            this.colTimeCreated,
+            this.colLastAccess,
+            this.colLastModify});
+            this.dgvFiles.Location = new System.Drawing.Point(444, 145);
+            this.dgvFiles.Name = "dgvFiles";
+            this.dgvFiles.ReadOnly = true;
+            this.dgvFiles.RowHeadersVisible = false;
+            this.dgvFiles.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvFiles.Size = new System.Drawing.Size(388, 280);
+            this.dgvFiles.TabIndex = 15;
+            // 
+            // colFileName
+            // 
+            this.colFileName.DataPropertyName = "Name";
+            this.colFileName.Frozen = true;
+            this.colFileName.HeaderText = "Name:";
+            this.colFileName.Name = "colFileName";
+            this.colFileName.ReadOnly = true;
+            // 
+            // colType
+            // 
+            this.colType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colType.DataPropertyName = "Extension";
+            this.colType.HeaderText = "Type:";
+            this.colType.Name = "colType";
+            this.colType.ReadOnly = true;
+            this.colType.Width = 59;
+            // 
+            // colLength
+            // 
+            this.colLength.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colLength.DataPropertyName = "Length";
+            this.colLength.HeaderText = "Size:";
+            this.colLength.Name = "colLength";
+            this.colLength.ReadOnly = true;
+            this.colLength.Width = 55;
+            // 
+            // colTimeCreated
+            // 
+            this.colTimeCreated.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colTimeCreated.HeaderText = "Time Created:";
+            this.colTimeCreated.Name = "colTimeCreated";
+            this.colTimeCreated.ReadOnly = true;
+            this.colTimeCreated.Width = 98;
+            // 
+            // colLastAccess
+            // 
+            this.colLastAccess.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colLastAccess.HeaderText = "Last Access:";
+            this.colLastAccess.Name = "colLastAccess";
+            this.colLastAccess.ReadOnly = true;
+            this.colLastAccess.Width = 93;
+            // 
+            // colLastModify
+            // 
+            this.colLastModify.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colLastModify.HeaderText = "Last Modify:";
+            this.colLastModify.Name = "colLastModify";
+            this.colLastModify.ReadOnly = true;
+            this.colLastModify.Width = 89;
             // 
             // MainForm
             // 
@@ -265,7 +475,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(847, 463);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.dgvFiles);
             this.Controls.Add(this.pnlFolderDetails);
             this.Controls.Add(this.btnErrorLog);
             this.Controls.Add(this.btnSettings);
@@ -288,8 +498,8 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).EndInit();
             this.pnlFolderDetails.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbxFilePicture)).EndInit();
+            this.pnlFolderDetails.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -312,8 +522,25 @@
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnErrorLog;
         private System.Windows.Forms.Panel pnlFolderDetails;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.PictureBox pbxFilePicture;
+        private System.Windows.Forms.DataGridView dgvFiles;
+        private System.Windows.Forms.Label lblFolderFileType;
+        private System.Windows.Forms.Label lblTypeLabel;
+        private System.Windows.Forms.Label lblFolderFileLastModify;
+        private System.Windows.Forms.Label lblLastModifyLabel;
+        private System.Windows.Forms.Label lblFileFolderLastAccess;
+        private System.Windows.Forms.Label lblLastAccessLabel;
+        private System.Windows.Forms.Label lblFolderFileCreated;
+        private System.Windows.Forms.Label lblCreatedLabel;
+        private System.Windows.Forms.Label lblFolderFileSize;
+        private System.Windows.Forms.Label lblSizeLabel;
+        private System.Windows.Forms.Label lblFolderFileName;
+        private System.Windows.Forms.Label lblFolderFileLabel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colFileName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLength;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colTimeCreated;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLastAccess;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLastModify;
     }
 }
 

@@ -1,11 +1,9 @@
 ﻿using FileForensiq.Core.Interfaces;
 using FileForensiq.Core.Models;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FileForensiq.Core
@@ -163,22 +161,32 @@ namespace FileForensiq.Core
             return String.IsNullOrEmpty(extension) ? "folder.png" : extension.Replace(".", string.Empty).Trim() + ".png";
         }
 
-
+        /// <summary>
+        /// Opens directory or file that are in tag property in tree node from treeview control.
+        /// </summary>
+        /// <param name="file">TreeNode object from treeview control.</param>
         public void OpenFile(TreeNode file)
         {
-            string path = "";
-            if(file is DirectoryTreeNode)
+            try
             {
-                var tag = (DirectoryInfo)file.Tag;
-                path = tag.FullName;
-            }
-            else
-            {
-                var tag = (FileInfo)file.Tag;
-                path = tag.FullName;
-            }
+                string path = "";
+                if (file is DirectoryTreeNode)
+                {
+                    var tag = (DirectoryInfo)file.Tag;
+                    path = tag.FullName;
+                }
+                else
+                {
+                    var tag = (FileInfo)file.Tag;
+                    path = tag.FullName;
+                }
 
-            System.Diagnostics.Process.Start(path);
+                System.Diagnostics.Process.Start(path);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using FileForensiq.Core;
+using FileForensiq.Core.Models;
 using FileForensiq.UI.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace FileForensiq.UI
     public partial class MainForm : Form
     {
         private readonly FileSystemManipulation filesManipulation;
-        private bool sortDescending = false;
+        private bool sortDescending = true;
 
         public MainForm()
         {
@@ -22,7 +24,7 @@ namespace FileForensiq.UI
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            FormHelper.SetPartitionLettersCombobox(cbxPartitionLetters);
+            SetPartitionLettersCombobox();
             timer.Start();
             tvFileSystem.TreeViewNodeSorter = new TreeNodeSorter();
         }
@@ -39,7 +41,80 @@ namespace FileForensiq.UI
             lblMemoryMB.Text = String.Format("~ {0} MB", memoryUsage.ToString());
         }
 
-        private async void btnSearch_Click(object sender, EventArgs e)
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            LoadFileTreeView();
+        }
+
+        private void cbxPartitionLetters_Click(object sender, EventArgs e)
+        {
+            SetPartitionLettersCombobox();
+        }
+
+        private void cbxSortBy_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tvFileSystem.Nodes.Count != 0)
+            {
+                ShowHideDetailLabels(false);
+                if (dgvFiles.Rows.Count != 0)
+                {
+                    dgvFiles.Rows.Clear();
+                }
+
+                SortTreeView();
+            }
+        }
+
+        private void lblSortArrow_Click(object sender, EventArgs e)
+        {
+            if(cbxSortBy.SelectedIndex != -1)
+            {
+                if (lblSortArrow.Text == "↓")
+                {
+                    sortDescending = true;
+                    lblSortArrow.Text = "↑";
+                }
+                else
+                {
+                    sortDescending = false;
+                    lblSortArrow.Text = "↓";
+                }
+            }
+        }
+
+        private void tvFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            try
+            {
+                filesManipulation.OpenFile(tvFileSystem.SelectedNode);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: ", ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void tvFileSystem_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            var selectedNode = tvFileSystem.SelectedNode;
+            if (selectedNode == null)
+            {
+                return;
+            }
+
+            if (selectedNode is DirectoryTreeNode)
+            {
+                ShowDirectoryFileDetails(true, selectedNode);
+            }
+            else //Is file
+            {
+                ShowDirectoryFileDetails(false, selectedNode);
+            }
+        }
+
+        #region Helpers
+
+        public async void LoadFileTreeView()
         {
             btnSearch.Text = "Processing...";
             btnSearch.Enabled = false;
@@ -48,6 +123,11 @@ namespace FileForensiq.UI
             tvFileSystem.Nodes.Clear();
             cbxSortBy.Enabled = false;
             lblSortArrow.Visible = false;
+            ShowHideDetailLabels(false);
+            if(dgvFiles.Rows.Count != 0)
+            {
+                dgvFiles.Rows.Clear();
+            }
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -78,39 +158,200 @@ namespace FileForensiq.UI
             btnSearch.Enabled = true;
         }
 
-        private void cbxPartitionLetters_Click(object sender, EventArgs e)
+        public void SetPartitionLettersCombobox()
         {
-            FormHelper.SetPartitionLettersCombobox(cbxPartitionLetters);
-        }
+            //Checking if new partition appeared (e.g. USB flash inserted) and updating combobox
+            string lastSelectedDriver = cbxPartitionLetters.SelectedItem?.ToString();
+            var drivesLetters = Directory.GetLogicalDrives();
+            cbxPartitionLetters.Items.Clear();
+            cbxPartitionLetters.Items.AddRange(drivesLetters.Select(x => x.ToString()).ToArray());
 
-        private void cbxSortBy_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (tvFileSystem.Nodes.Count != 0)
+            if (!String.IsNullOrEmpty(lastSelectedDriver))
             {
-                FormHelper.SortTreeView(cbxSortBy, tvFileSystem, sortDescending);
+                cbxPartitionLetters.SelectedItem = lastSelectedDriver;
+            }
+            else
+            {
+                cbxPartitionLetters.SelectedIndex = 0;
             }
         }
 
-        private void lblSortArrow_Click(object sender, EventArgs e)
+        public void SortTreeView()
         {
-            if(cbxSortBy.SelectedIndex != -1)
+            switch (cbxSortBy.SelectedIndex)
             {
-                if (lblSortArrow.Text == "↓")
-                {
-                    sortDescending = true;
-                    lblSortArrow.Text = "↑";
-                }
-                else
-                {
-                    sortDescending = false;
-                    lblSortArrow.Text = "↓";
-                }
+                // Sort by name
+                case 0:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.Name;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by size
+                case 1:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.Size;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by number of files
+                case 2:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.NumberOfFiles;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by time created
+                case 3:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.TimeCreated;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by last modify
+                case 4:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.TimeLastModified;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                // Sort by last access
+                case 5:
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).SortByMethod = SortBy.TimeLastAccessed;
+                    (tvFileSystem.TreeViewNodeSorter as TreeNodeSorter).Descending = sortDescending;
+                    tvFileSystem.Sort();
+                    break;
+
+                default:
+                    break;
             }
         }
 
-        private void tvFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        public string DisplayFileSize(long size)
         {
-            filesManipulation.OpenFile(tvFileSystem.SelectedNode);
+            // Displaying size of files in KB, MB, GB or TB
+            var tmp = ((size) / 1024f) / 1024f;
+            if (tmp < 1.0)
+            {
+                return (size) / 1024f + " KB";
+            }
+            else if (tmp > 1000)
+            {
+                return (tmp / 1000f) + " GB";
+            }
+            else if (tmp > 1000000)
+            {
+                return (tmp / 953674f) + " TB";
+            }
+            else
+            {
+                return tmp + " MB";
+            }
         }
+
+        public void SetResetPositionOfDetailsLabels(bool directory)
+        {
+            ShowHideDetailLabels(true);
+            
+            if (directory)
+            {
+                lblFolderFileName.Location = new System.Drawing.Point(116, 14);
+                lblFolderFileLabel.Location = new System.Drawing.Point(46, 11);
+
+                lblTypeLabel.Location = new System.Drawing.Point(1, 63);
+                lblFolderFileType.Location = new System.Drawing.Point(117, 63);
+
+                lblFolderFileSize.Location = new System.Drawing.Point(117, 39);
+                lblSizeLabel.Location = new System.Drawing.Point(70, 39);
+            }
+            else
+            {
+                lblFolderFileLabel.Location = new System.Drawing.Point(57, 11);
+                lblFolderFileName.Location = new System.Drawing.Point(106, 14);
+
+                lblTypeLabel.Location = new System.Drawing.Point(57, 63);
+                lblFolderFileType.Location = new System.Drawing.Point(107, 63);
+
+                lblSizeLabel.Location = new System.Drawing.Point(59, 39);
+                lblFolderFileSize.Location = new System.Drawing.Point(107, 39);
+            }
+        }
+
+        public void ShowHideDetailLabels(bool show)
+        {
+            if(show)
+            {
+                lblFolderFileName.Visible = true;
+                lblFolderFileType.Visible = true;
+                lblFolderFileSize.Visible = true;
+                lblFolderFileCreated.Visible = true;
+                lblFileFolderLastAccess.Visible = true;
+                lblFolderFileLastModify.Visible = true;
+            }
+            else
+            {
+                lblFolderFileName.Visible = false;
+                lblFolderFileType.Visible = false;
+                lblFolderFileSize.Visible = false;
+                lblFolderFileCreated.Visible = false;
+                lblFileFolderLastAccess.Visible = false;
+                lblFolderFileLastModify.Visible = false;
+            }
+        }
+
+        public void ShowDirectoryFileDetails(bool directory, TreeNode selectedNode)
+        {
+            dgvFiles.Rows.Clear();
+            if (directory)
+            {
+                var dirInfo = selectedNode.Tag as DirectoryInfo;
+
+                SetResetPositionOfDetailsLabels(true);
+
+                lblFolderFileLabel.Text = "Folder:";
+                lblFolderFileName.Text = dirInfo.Name;
+
+                lblTypeLabel.Text = "Number of files:";
+                lblFolderFileType.Text = (selectedNode as DirectoryTreeNode).NumberOfFiles.ToString();
+
+                lblFolderFileSize.Text = DisplayFileSize((selectedNode as DirectoryTreeNode).Size);
+
+                lblFolderFileCreated.Text = dirInfo.CreationTime.ToString();
+                lblFileFolderLastAccess.Text = dirInfo.LastAccessTime.ToString();
+                lblFolderFileLastModify.Text = dirInfo.LastWriteTime.ToString();
+
+                //Show files in DataGridView
+                foreach(var file in selectedNode.Nodes.Cast<TreeNode>().Where(x => !(x is DirectoryTreeNode)).Select(x => x.Tag as FileInfo))
+                {
+                    int row = dgvFiles.Rows.Count;
+                    dgvFiles.Rows.Add();
+                    dgvFiles.Rows[row].Cells[0].Value = file.Name;
+                    dgvFiles.Rows[row].Cells[1].Value = file.Extension;
+                    dgvFiles.Rows[row].Cells[2].Value = DisplayFileSize(file.Length);
+                    dgvFiles.Rows[row].Cells[3].Value = file.CreationTime;
+                    dgvFiles.Rows[row].Cells[4].Value = file.LastAccessTime;
+                    dgvFiles.Rows[row].Cells[5].Value = file.LastWriteTime;
+                }
+            }
+            else
+            {
+                var fileInfo = selectedNode.Tag as FileInfo;
+
+                SetResetPositionOfDetailsLabels(false);
+
+                lblFolderFileLabel.Text = "File:";
+                lblFolderFileName.Text = fileInfo.Name;
+
+                lblTypeLabel.Text = "Type:";
+                lblFolderFileType.Text = fileInfo.Extension;
+                lblFolderFileSize.Text = DisplayFileSize(fileInfo.Length);
+
+                lblFolderFileCreated.Text = fileInfo.CreationTime.ToString();
+                lblFileFolderLastAccess.Text = fileInfo.LastAccessTime.ToString();
+                lblFolderFileLastModify.Text = fileInfo.LastWriteTime.ToString();
+            }
+        }
+
+        #endregion
     }
 }
