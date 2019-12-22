@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 namespace FileForensiq.Core.Models
 {
+    [Serializable]
     public class PartitionProcessingResult
     {
         /// <summary>

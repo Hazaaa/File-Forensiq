@@ -1,9 +1,13 @@
 ﻿using FileForensiq.Core;
 using FileForensiq.Core.Models;
+using FileForensiq.Core.Serializable;
+using FileForensiq.Redis;
 using FileForensiq.UI.Helpers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,36 +18,85 @@ namespace FileForensiq.UI
     public partial class MainForm : Form
     {
         private readonly FileSystemManipulation filesManipulation;
+        private readonly RedisFunctions redis;
+
+
         private bool sortDescending = true;
+        public string CacheTime { get
+            {
+                return redis.GetValueForKey("CacheTime");
+            }
+            set {
+                redis.AddNewConfig("CacheTime", value);
+            } }
 
         public MainForm()
         {
             InitializeComponent();
             filesManipulation = new FileSystemManipulation();
+            redis = new RedisFunctions();
         }
+
+        #region Events
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             SetPartitionLettersCombobox();
             timer.Start();
             tvFileSystem.TreeViewNodeSorter = new TreeNodeSorter();
+            bool serverStarted = redis.StartRedisServer();
+            if (!serverStarted)
+            {
+                MessageBox.Show("You can still use application, but won't have cache feature. Try restarting application and check if Redis Server files are in application folder.", "Redis Server didn't started.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                lblRedisServerInfo.Text = "Redis Server is not running.";
+                lblRedisServerInfo.ForeColor = Color.Red;
+                btnStartRedis.Visible = true;
+            }
+            else
+            {
+                lblRedisServerInfo.Text = "Redis Server is running...";
+                lblRedisServerInfo.ForeColor = Color.Green;
+                cbxCacheEvery.SelectedItem = CacheTime;
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             timer.Stop();
             timer.Dispose();
+            redis.ShutDownRedisServer();
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
             long memoryUsage = (Process.GetCurrentProcess().PrivateMemorySize64 / 1024) / 1024;
             lblMemoryMB.Text = String.Format("~ {0} MB", memoryUsage.ToString());
+
+            try
+            {
+                var serverIsRunning = System.Diagnostics.Process.GetProcessById(redis.ServerStarted);
+                lblRedisServerInfo.Text = "Redis Server is running...";
+                lblRedisServerInfo.ForeColor = Color.Green;
+                btnStartRedis.Visible = false;
+            }
+            catch (Exception)
+            {
+                lblRedisServerInfo.Text = "Redis Server is not running.";
+                lblRedisServerInfo.ForeColor = Color.Red;
+                btnStartRedis.Visible = true;
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            LoadFileTreeView();
+            try
+            {
+                LoadFileTreeView();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void cbxPartitionLetters_Click(object sender, EventArgs e)
@@ -67,7 +120,7 @@ namespace FileForensiq.UI
 
         private void lblSortArrow_Click(object sender, EventArgs e)
         {
-            if(cbxSortBy.SelectedIndex != -1)
+            if (cbxSortBy.SelectedIndex != -1)
             {
                 if (lblSortArrow.Text == "↓")
                 {
@@ -90,7 +143,7 @@ namespace FileForensiq.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: ", ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -111,6 +164,52 @@ namespace FileForensiq.UI
                 ShowDirectoryFileDetails(false, selectedNode);
             }
         }
+
+        private void btnStartRedis_Click(object sender, EventArgs e)
+        {
+            bool serverStarted = redis.StartRedisServer();
+            if (!serverStarted)
+            {
+                MessageBox.Show("You can still use application, but won't have cache feature. Try restarting application and check if Redis Server files are in application folder.", "Redis Server didn't started.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void cbxCacheEvery_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CacheTime = cbxCacheEvery.SelectedItem.ToString();
+        }
+
+        private void bgwCache_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            var args = e.Argument as PartitionProcessingResult;
+
+            SerializableTreeView stw = new SerializableTreeView(args.NumberOfReturnedResults);
+            stw.ConvertToSerializeData(args);
+
+            // Settings has to be provided so polymorphism deserialization works.
+            JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            var serialized = JsonConvert.SerializeObject(stw, settings);
+            var result = redis.AddNewCache(GenerateCacheKey(args.RootNode.Text.Substring(0, 3)), serialized);
+
+            e.Result = result;
+        }
+
+        private void bgwCache_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show("Unable to cache data.", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            if ((bool)e.Result)
+            {
+                lblLastCache.Visible = true;
+                lblLastCacheLabel.Visible = true;
+                lblLastCache.Text = DateTime.Now.ToString();
+            }
+        }
+
+        #endregion
 
         #region Helpers
 
@@ -134,8 +233,17 @@ namespace FileForensiq.UI
 
             // With Task.Run UI is still responsive while data is being collected
             string selectedDrive = cbxPartitionLetters.SelectedItem?.ToString();
-            var files = await Task.Run(() => filesManipulation.GetPartitionFileTree(selectedDrive, true));
+            PartitionProcessingResult files = null;
 
+            if (CheckIfIsCached(selectedDrive))
+            {
+                files = await Task.Run(() => GetCachedData(selectedDrive));
+            }
+            else
+            {
+                files = await Task.Run(() => filesManipulation.GetPartitionFileTree(selectedDrive, true));
+            }
+            
             stopWatch.Stop();
 
             // Showing results and configurating some controls
@@ -151,11 +259,60 @@ namespace FileForensiq.UI
 
                 tvFileSystem.Nodes.Add(files.RootNode);
                 tvFileSystem.Nodes[0].Expand();
+
+                if (!CheckIfIsCached(selectedDrive))
+                {
+                    CacheData(files);
+                }
+            } 
+            else
+            {
+                MessageBox.Show("Error occured while trying to get files.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             pbxLoading.Visible = false;
             btnSearch.Text = "Process";
             btnSearch.Enabled = true;
+        }
+
+        public void CacheData(PartitionProcessingResult result)
+        {
+            bgwCache.RunWorkerAsync(argument: result);
+        }
+
+        public PartitionProcessingResult GetCachedData(string selectedDrive)
+        {
+            var key = GenerateCacheKey(selectedDrive);
+            var serialized = redis.GetValueForKey(key);
+
+            if (!String.IsNullOrEmpty(serialized))
+            {
+                try
+                {
+                    // Settings has to be provided so polymorphism deserialization works.
+                    JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                    var deserialized = JsonConvert.DeserializeObject<SerializableTreeView>(serialized, settings);
+
+                    return deserialized.ConvertToTreeViewData();
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        public bool CheckIfIsCached(string selectedDrive)
+        {
+            return lblLastCache.Visible && !CheckIfCacheExpired() && redis.CheckIfKeyExists(GenerateCacheKey(selectedDrive));
+        }
+
+        public bool CheckIfCacheExpired()
+        {
+            var result = DateTime.Compare(DateTime.Now, DateTime.Parse(lblLastCache.Text).AddMinutes(CacheTime == "" ? 10 : int.Parse(CacheTime.Substring(0,1))));
+
+            return result == 1 ? true : false;
         }
 
         public void SetPartitionLettersCombobox()
@@ -350,6 +507,11 @@ namespace FileForensiq.UI
                 lblFileFolderLastAccess.Text = fileInfo.LastAccessTime.ToString();
                 lblFolderFileLastModify.Text = fileInfo.LastWriteTime.ToString();
             }
+        }
+
+        public string GenerateCacheKey(string partitionLetter)
+        {
+            return partitionLetter + DateTime.Now.ToString("dd/MM/yyyy");
         }
 
         #endregion

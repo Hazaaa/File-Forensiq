@@ -42,7 +42,6 @@
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.lblSortArrow = new System.Windows.Forms.Label();
             this.pbxLoading = new System.Windows.Forms.PictureBox();
-            this.btnSettings = new System.Windows.Forms.Button();
             this.btnErrorLog = new System.Windows.Forms.Button();
             this.pnlFolderDetails = new System.Windows.Forms.Panel();
             this.lblFolderFileType = new System.Windows.Forms.Label();
@@ -64,6 +63,13 @@
             this.colTimeCreated = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLastAccess = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLastModify = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblLastCache = new System.Windows.Forms.Label();
+            this.lblLastCacheLabel = new System.Windows.Forms.Label();
+            this.lblRedisServerInfo = new System.Windows.Forms.Label();
+            this.btnStartRedis = new System.Windows.Forms.Button();
+            this.bgwCache = new System.ComponentModel.BackgroundWorker();
+            this.cbxCacheEvery = new System.Windows.Forms.ComboBox();
+            this.lblCacheEveryLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
             this.pnlFolderDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).BeginInit();
@@ -189,7 +195,7 @@
             // lblMemoryUsage
             // 
             this.lblMemoryUsage.AutoSize = true;
-            this.lblMemoryUsage.Location = new System.Drawing.Point(150, 437);
+            this.lblMemoryUsage.Location = new System.Drawing.Point(250, 438);
             this.lblMemoryUsage.Name = "lblMemoryUsage";
             this.lblMemoryUsage.Size = new System.Drawing.Size(79, 13);
             this.lblMemoryUsage.TabIndex = 7;
@@ -198,7 +204,7 @@
             // lblMemoryMB
             // 
             this.lblMemoryMB.AutoSize = true;
-            this.lblMemoryMB.Location = new System.Drawing.Point(228, 438);
+            this.lblMemoryMB.Location = new System.Drawing.Point(328, 439);
             this.lblMemoryMB.Name = "lblMemoryMB";
             this.lblMemoryMB.Size = new System.Drawing.Size(74, 13);
             this.lblMemoryMB.TabIndex = 8;
@@ -232,22 +238,13 @@
             this.pbxLoading.TabStop = false;
             this.pbxLoading.Visible = false;
             // 
-            // btnSettings
-            // 
-            this.btnSettings.Location = new System.Drawing.Point(12, 432);
-            this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(64, 23);
-            this.btnSettings.TabIndex = 11;
-            this.btnSettings.Text = "Settings";
-            this.btnSettings.UseVisualStyleBackColor = true;
-            // 
             // btnErrorLog
             // 
-            this.btnErrorLog.Location = new System.Drawing.Point(80, 432);
+            this.btnErrorLog.Location = new System.Drawing.Point(170, 432);
             this.btnErrorLog.Name = "btnErrorLog";
-            this.btnErrorLog.Size = new System.Drawing.Size(64, 23);
+            this.btnErrorLog.Size = new System.Drawing.Size(75, 23);
             this.btnErrorLog.TabIndex = 13;
-            this.btnErrorLog.Text = "Error Log";
+            this.btnErrorLog.Text = "⚠ Error Log";
             this.btnErrorLog.UseVisualStyleBackColor = true;
             // 
             // pnlFolderDetails
@@ -469,16 +466,89 @@
             this.colLastModify.ReadOnly = true;
             this.colLastModify.Width = 89;
             // 
+            // lblLastCache
+            // 
+            this.lblLastCache.AutoSize = true;
+            this.lblLastCache.Location = new System.Drawing.Point(447, 440);
+            this.lblLastCache.Name = "lblLastCache";
+            this.lblLastCache.Size = new System.Drawing.Size(80, 13);
+            this.lblLastCache.TabIndex = 17;
+            this.lblLastCache.Text = "last cache date";
+            this.lblLastCache.Visible = false;
+            // 
+            // lblLastCacheLabel
+            // 
+            this.lblLastCacheLabel.AutoSize = true;
+            this.lblLastCacheLabel.Location = new System.Drawing.Point(382, 439);
+            this.lblLastCacheLabel.Name = "lblLastCacheLabel";
+            this.lblLastCacheLabel.Size = new System.Drawing.Size(63, 13);
+            this.lblLastCacheLabel.TabIndex = 16;
+            this.lblLastCacheLabel.Text = "Last cache:";
+            this.lblLastCacheLabel.Visible = false;
+            // 
+            // lblRedisServerInfo
+            // 
+            this.lblRedisServerInfo.AutoSize = true;
+            this.lblRedisServerInfo.Location = new System.Drawing.Point(700, 438);
+            this.lblRedisServerInfo.Name = "lblRedisServerInfo";
+            this.lblRedisServerInfo.Size = new System.Drawing.Size(89, 13);
+            this.lblRedisServerInfo.TabIndex = 18;
+            this.lblRedisServerInfo.Text = "Redis Server Info";
+            // 
+            // btnStartRedis
+            // 
+            this.btnStartRedis.Location = new System.Drawing.Point(589, 432);
+            this.btnStartRedis.Name = "btnStartRedis";
+            this.btnStartRedis.Size = new System.Drawing.Size(110, 23);
+            this.btnStartRedis.TabIndex = 19;
+            this.btnStartRedis.Text = "♺ Try to Start Redis";
+            this.btnStartRedis.UseVisualStyleBackColor = true;
+            this.btnStartRedis.Visible = false;
+            this.btnStartRedis.Click += new System.EventHandler(this.btnStartRedis_Click);
+            // 
+            // bgwCache
+            // 
+            this.bgwCache.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgwCache_DoWork);
+            this.bgwCache.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgwCache_RunWorkerCompleted);
+            // 
+            // cbxCacheEvery
+            // 
+            this.cbxCacheEvery.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxCacheEvery.FormattingEnabled = true;
+            this.cbxCacheEvery.Items.AddRange(new object[] {
+            "10 minutes",
+            "30 minutes",
+            "60 minutes"});
+            this.cbxCacheEvery.Location = new System.Drawing.Point(88, 433);
+            this.cbxCacheEvery.Name = "cbxCacheEvery";
+            this.cbxCacheEvery.Size = new System.Drawing.Size(76, 21);
+            this.cbxCacheEvery.TabIndex = 20;
+            this.cbxCacheEvery.SelectedIndexChanged += new System.EventHandler(this.cbxCacheEvery_SelectedIndexChanged);
+            // 
+            // lblCacheEveryLabel
+            // 
+            this.lblCacheEveryLabel.AutoSize = true;
+            this.lblCacheEveryLabel.Location = new System.Drawing.Point(12, 437);
+            this.lblCacheEveryLabel.Name = "lblCacheEveryLabel";
+            this.lblCacheEveryLabel.Size = new System.Drawing.Size(70, 13);
+            this.lblCacheEveryLabel.TabIndex = 21;
+            this.lblCacheEveryLabel.Text = "Cache every:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(847, 463);
+            this.Controls.Add(this.lblCacheEveryLabel);
+            this.Controls.Add(this.cbxCacheEvery);
+            this.Controls.Add(this.btnStartRedis);
+            this.Controls.Add(this.lblRedisServerInfo);
+            this.Controls.Add(this.lblLastCache);
+            this.Controls.Add(this.lblLastCacheLabel);
             this.Controls.Add(this.dgvFiles);
             this.Controls.Add(this.pnlFolderDetails);
             this.Controls.Add(this.btnErrorLog);
-            this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.lblSortArrow);
             this.Controls.Add(this.lblMemoryMB);
             this.Controls.Add(this.lblMemoryUsage);
@@ -519,7 +589,6 @@
         private System.Windows.Forms.Label lblMemoryMB;
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label lblSortArrow;
-        private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnErrorLog;
         private System.Windows.Forms.Panel pnlFolderDetails;
         private System.Windows.Forms.DataGridView dgvFiles;
@@ -541,6 +610,13 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colTimeCreated;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastAccess;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastModify;
+        private System.Windows.Forms.Label lblLastCache;
+        private System.Windows.Forms.Label lblLastCacheLabel;
+        private System.Windows.Forms.Label lblRedisServerInfo;
+        private System.Windows.Forms.Button btnStartRedis;
+        private System.ComponentModel.BackgroundWorker bgwCache;
+        private System.Windows.Forms.ComboBox cbxCacheEvery;
+        private System.Windows.Forms.Label lblCacheEveryLabel;
     }
 }
 

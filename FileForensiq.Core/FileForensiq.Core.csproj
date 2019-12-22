@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,6 +48,13 @@
     <Compile Include="Models\DirectoryTreeNode.cs" />
     <Compile Include="Models\PartitionProcessingResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializable\SerializableDirectoryNode.cs" />
+    <Compile Include="Serializable\SerializableFileNode.cs" />
+    <Compile Include="Serializable\SerializableTreeNode.cs" />
+    <Compile Include="Serializable\SerializableTreeView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
