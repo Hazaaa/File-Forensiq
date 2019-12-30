@@ -12,19 +12,26 @@ namespace FileForensiq.Core.Models
         /// </summary>
         public DirectoryTreeNode RootNode { get; set; }
 
-        public int NumberOfReturnedResults { get; set; }
+        public int NumberOfFolders { get; set; }
+
+        public int NumberOfFiles { get; set; }
 
         /// <summary>
         /// Number of Unauthorized errors while trying to access directories and files.
         /// </summary>
         public int UnauthorizedErrors { get; set; }
+
+        /// <summary>
+        /// Number of other errors while trying to access directories and files.
+        /// </summary>
         public int OtherErrors { get; set; }
 
         public PartitionProcessingResult()
         {
             UnauthorizedErrors = 0;
             OtherErrors = 0;
-            NumberOfReturnedResults = 0;
+            NumberOfFolders = 0;
+            NumberOfFiles = 0;
         }
     }
 }

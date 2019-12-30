@@ -107,10 +107,6 @@
       <Project>{03c2fa96-d1e9-49d0-b564-aeebaa14d034}</Project>
       <Name>FileForensiq.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FileForensiq.Redis\FileForensiq.Redis.csproj">
-      <Project>{906500ff-ef3a-49be-bbbd-cc34c6c084ea}</Project>
-      <Name>FileForensiq.Redis</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="FileForensiqIcon.ico" />

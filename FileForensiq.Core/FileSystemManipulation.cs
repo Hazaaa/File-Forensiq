@@ -26,7 +26,7 @@ namespace FileForensiq.Core
             var rootNode = new DirectoryTreeNode(rootDirectory.Name) { Tag = rootDirectory };
 
             fileTreeNodeStack.Push(rootNode);
-            result.NumberOfReturnedResults++;
+            result.NumberOfFolders++;
 
             DirectoryTreeNode currentNode;
             while (fileTreeNodeStack.Count > 0)
@@ -44,9 +44,9 @@ namespace FileForensiq.Core
                             ImageKey = "folder.png",
                             SelectedImageKey = "folder.png",
                         };
-
+                        
                         currentNode.Nodes.Add(childNode);
-                        result.NumberOfReturnedResults++;
+                        result.NumberOfFolders++;
 
                         fileTreeNodeStack.Push(childNode);
                     };
@@ -65,7 +65,7 @@ namespace FileForensiq.Core
                                 SelectedImageKey = iconName
                             });
                             currentNode.Size += file.Length;
-                            result.NumberOfReturnedResults++;
+                            result.NumberOfFiles++;
                         };
                     }
                 }

@@ -65,8 +65,6 @@
             this.colLastModify = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblLastCache = new System.Windows.Forms.Label();
             this.lblLastCacheLabel = new System.Windows.Forms.Label();
-            this.lblRedisServerInfo = new System.Windows.Forms.Label();
-            this.btnStartRedis = new System.Windows.Forms.Button();
             this.bgwCache = new System.ComponentModel.BackgroundWorker();
             this.cbxCacheEvery = new System.Windows.Forms.ComboBox();
             this.lblCacheEveryLabel = new System.Windows.Forms.Label();
@@ -486,26 +484,6 @@
             this.lblLastCacheLabel.Text = "Last cache:";
             this.lblLastCacheLabel.Visible = false;
             // 
-            // lblRedisServerInfo
-            // 
-            this.lblRedisServerInfo.AutoSize = true;
-            this.lblRedisServerInfo.Location = new System.Drawing.Point(700, 438);
-            this.lblRedisServerInfo.Name = "lblRedisServerInfo";
-            this.lblRedisServerInfo.Size = new System.Drawing.Size(89, 13);
-            this.lblRedisServerInfo.TabIndex = 18;
-            this.lblRedisServerInfo.Text = "Redis Server Info";
-            // 
-            // btnStartRedis
-            // 
-            this.btnStartRedis.Location = new System.Drawing.Point(589, 432);
-            this.btnStartRedis.Name = "btnStartRedis";
-            this.btnStartRedis.Size = new System.Drawing.Size(110, 23);
-            this.btnStartRedis.TabIndex = 19;
-            this.btnStartRedis.Text = "♺ Try to Start Redis";
-            this.btnStartRedis.UseVisualStyleBackColor = true;
-            this.btnStartRedis.Visible = false;
-            this.btnStartRedis.Click += new System.EventHandler(this.btnStartRedis_Click);
-            // 
             // bgwCache
             // 
             this.bgwCache.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgwCache_DoWork);
@@ -542,8 +520,6 @@
             this.ClientSize = new System.Drawing.Size(847, 463);
             this.Controls.Add(this.lblCacheEveryLabel);
             this.Controls.Add(this.cbxCacheEvery);
-            this.Controls.Add(this.btnStartRedis);
-            this.Controls.Add(this.lblRedisServerInfo);
             this.Controls.Add(this.lblLastCache);
             this.Controls.Add(this.lblLastCacheLabel);
             this.Controls.Add(this.dgvFiles);
@@ -612,8 +588,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastModify;
         private System.Windows.Forms.Label lblLastCache;
         private System.Windows.Forms.Label lblLastCacheLabel;
-        private System.Windows.Forms.Label lblRedisServerInfo;
-        private System.Windows.Forms.Button btnStartRedis;
         private System.ComponentModel.BackgroundWorker bgwCache;
         private System.Windows.Forms.ComboBox cbxCacheEvery;
         private System.Windows.Forms.Label lblCacheEveryLabel;
