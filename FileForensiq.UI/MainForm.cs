@@ -124,6 +124,36 @@ namespace FileForensiq.UI
             }
         }
 
+        private void tvFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            var expandNode = e.Node as DirectoryTreeNode;
+            if (!expandNode.Expanded)
+            {
+                tvFileSystem.BeginUpdate();
+                e.Node.Nodes.Clear();
+                var children = filesManipulation.GetDirectoryChildren((expandNode.Tag as DirectoryInfo).FullName);
+
+                if (children.Error == null && children.ChildNodes.Count != 0)
+                {
+                    e.Node.Nodes.AddRange(children.ChildNodes.ToArray());
+                    expandNode.Expanded = true;
+                }
+                else if (children.Error != null)
+                {
+                    e.Node.ForeColor = Color.Red;
+                    if (children.Error is UnauthorizedAccessException)
+                    {
+                        e.Node.Text += " (Unauthorized Access Error)";
+                    }
+                    else
+                    {
+                        e.Node.Text += " (Unknown Error Occured)";
+                    }
+                }
+                tvFileSystem.EndUpdate();
+            }
+        }
+
         private void cbxCacheEvery_SelectedIndexChanged(object sender, EventArgs e)
         {
             //CacheTime = cbxCacheEvery.SelectedItem.ToString();
@@ -131,37 +161,7 @@ namespace FileForensiq.UI
 
         private void bgwCache_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            var args = e.Argument as PartitionProcessingResult;
-
-            Stack<TreeNode> nodesForProcess = new Stack<TreeNode>();
-            nodesForProcess.Push(args.RootNode);
-
-            while (nodesForProcess.Count != 0)
-            {
-                var node = nodesForProcess.Pop();
-
-                if(node is DirectoryTreeNode)
-                {
-                    var dirInfo = node.Tag as DirectoryInfo;
-
-                    // Creating cache for folder - NumberOfFiles//Size//LastAccessTime//LastWriteTime
-                    // TODO
-
-                    foreach (var child in node.Nodes.Cast<TreeNode>())
-                    {
-                        nodesForProcess.Push(child);
-                    }
-                }
-                else
-                {
-                    var fileInfo = node.Tag as FileInfo;
-
-                    // Creating cache for file - Size//CreationTime//LastAccessTime//LastWriteTime
-                    // TODO
-                }
-            }
-
-            e.Result = true;
+            
         }
 
         private void bgwCache_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -181,16 +181,16 @@ namespace FileForensiq.UI
             }
         }
 
+
         #endregion
 
         #region Helpers
 
-        public async void LoadFileTreeView()
+        public void LoadFileTreeView()
         {
             btnSearch.Text = "Processing...";
             btnSearch.Enabled = false;
             pbxLoading.Visible = true;
-            lblResultStats.Visible = false;
             tvFileSystem.Nodes.Clear();
             cbxSortBy.Enabled = false;
             lblSortArrow.Visible = false;
@@ -199,32 +199,31 @@ namespace FileForensiq.UI
             {
                 dgvFiles.Rows.Clear();
             }
-
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
             
             string selectedDrive = cbxPartitionLetters.SelectedItem?.ToString();
-            PartitionProcessingResult files = null;
 
-            // With Task.Run UI is still responsive while data is being collected
-            files = await Task.Run(() => filesManipulation.GetPartitionFileTree(selectedDrive, true));
-
-            stopWatch.Stop();
+            // Creating root node object and getting his child nodes
+            DirectoryTreeNode rootNode = new DirectoryTreeNode(selectedDrive)
+            {
+                Tag = new DirectoryInfo(selectedDrive),
+                ImageKey = "harddisk.png",
+                SelectedImageKey = "harddisk.png"
+            };
+            var childs = filesManipulation.GetDirectoryChildren(selectedDrive);
 
             // Showing results and configurating some controls
-            if (files != null && files.RootNode != null)
+            if (childs.Error == null)
             {
-                lblResultStats.Text = String.Format("Time: {0}. Folders: {1}. Files: {2}. Errors: {3}", stopWatch.Elapsed, files.NumberOfFolders, files.NumberOfFiles, files.UnauthorizedErrors + files.OtherErrors);
-                lblResultStats.Visible = true;
                 cbxSortBy.Enabled = true;
                 lblSortArrow.Visible = true;
 
-                files.RootNode.ImageKey = "harddisk.png";
-                files.RootNode.SelectedImageKey = "harddisk.png";
+                tvFileSystem.BeginUpdate();
 
-                tvFileSystem.Nodes.Add(files.RootNode);
+                rootNode.Nodes.AddRange(childs.ChildNodes.ToArray());
+                tvFileSystem.Nodes.Add(rootNode);
                 tvFileSystem.Nodes[0].Expand();
+
+                tvFileSystem.EndUpdate();
 
                 //if (!CheckIfIsCached(selectedDrive))
                 //{
@@ -241,9 +240,9 @@ namespace FileForensiq.UI
             btnSearch.Enabled = true;
         }
 
-        public void CacheData(PartitionProcessingResult result)
+        public void CacheData()
         {
-            bgwCache.RunWorkerAsync(argument: result);
+            bgwCache.RunWorkerAsync();
         }
 
         //public bool CheckIfIsCached(string selectedDrive)

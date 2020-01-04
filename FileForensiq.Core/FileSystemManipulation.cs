@@ -13,78 +13,55 @@ namespace FileForensiq.Core
         public FileSystemManipulation(){}
 
         /// <summary>
-        /// Returns files tree (from root path) that are used in TreeView control.
+        /// Returns list of TreeNode that represents children of directory.
         /// </summary>
-        /// <param name="rootPath">Root path from which processing starts.</param>
-        /// <returns>PartitionProcessingResult object with all files full names and number of errors.</returns>
-        public PartitionProcessingResult GetPartitionFileTree(string rootPath, bool includeFiles = false)
+        /// <param name="directoryPath">Directory for which children is collected.</param>
+        /// <returns>List of directory children.</returns>
+        public ChildNodesResult GetDirectoryChildren(string directoryPath)
         {
-            PartitionProcessingResult result = new PartitionProcessingResult();
-            Stack<DirectoryTreeNode> fileTreeNodeStack = new Stack<DirectoryTreeNode>();
+            var directoryInfo = new DirectoryInfo(directoryPath);
+            var result = new ChildNodesResult();
 
-            var rootDirectory = new DirectoryInfo(rootPath);
-            var rootNode = new DirectoryTreeNode(rootDirectory.Name) { Tag = rootDirectory };
-
-            fileTreeNodeStack.Push(rootNode);
-            result.NumberOfFolders++;
-
-            DirectoryTreeNode currentNode;
-            while (fileTreeNodeStack.Count > 0)
+            try
             {
-                try
+                var directoryChilds = directoryInfo.EnumerateDirectories();
+                var filesChilds = directoryInfo.EnumerateFiles();
+
+                foreach (var directory in directoryChilds)
                 {
-                    currentNode = fileTreeNodeStack.Pop();
-                    var currentNodeInfo = (DirectoryInfo)currentNode.Tag;
-
-                    foreach(var childDirectory in currentNodeInfo.EnumerateDirectories())
+                    var directoryNode = new DirectoryTreeNode(directory.Name)
                     {
-                        var childNode = new DirectoryTreeNode(childDirectory.Name)
-                        {
-                            Tag = childDirectory,
-                            ImageKey = "folder.png",
-                            SelectedImageKey = "folder.png",
-                        };
-                        
-                        currentNode.Nodes.Add(childNode);
-                        result.NumberOfFolders++;
-
-                        fileTreeNodeStack.Push(childNode);
+                        Tag = directory,
+                        ImageKey = "folder.png",
+                        SelectedImageKey = "folder.png",
                     };
+                    directoryNode.Nodes.Add("dummy");
 
-                    if(includeFiles)
-                    {
-                        var directoryFiles = currentNodeInfo.EnumerateFiles();
-                        currentNode.NumberOfFiles += directoryFiles.Count();
-                        foreach(var file in directoryFiles)
-                        {
-                            var iconName = GetFileIcon(file.Extension);
-                            currentNode.Nodes.Add(new TreeNode(file.Name)
-                            {
-                                Tag = file,
-                                ImageKey = iconName,
-                                SelectedImageKey = iconName
-                            });
-                            currentNode.Size += file.Length;
-                            result.NumberOfFiles++;
-                        };
-                    }
+                    result.ChildNodes.Add(directoryNode);
                 }
-                catch (UnauthorizedAccessException ex)
+
+                foreach(var file in filesChilds)
                 {
-                    Console.WriteLine("Unauthorized access to file: " + ex.Message);
-                    result.UnauthorizedErrors++;
-                    continue;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Exception thrown: " + ex.Message);
-                    result.OtherErrors++;
-                    continue;
+                    var icon = GetFileIcon(file.Extension);
+                    result.ChildNodes.Add(new TreeNode(file.Name) 
+                    { 
+                        Tag = file,
+                        ImageKey = icon,
+                        SelectedImageKey = icon,
+                    });
                 }
             }
-            CalculateDirectorySize(rootNode);
-            CalculateNumberOfFiles(rootNode);
-            result.RootNode = rootNode;
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine("Unauthorized access to file: " + ex.Message);
+                result.Error = ex;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception thrown: " + ex.Message);
+                result.Error = ex;
+            }
+
             return result;
         }
 

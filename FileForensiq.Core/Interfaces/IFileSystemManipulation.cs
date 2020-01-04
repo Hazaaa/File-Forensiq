@@ -4,7 +4,9 @@ namespace FileForensiq.Core.Interfaces
 {
     interface IFileSystemManipulation
     {
-        PartitionProcessingResult GetPartitionFileTree(string rootPath, bool includeFiles = false);
+        ChildNodesResult GetDirectoryChildren(string directoryPath);
         long CalculateDirectorySize(DirectoryTreeNode rootNode);
+
+        int CalculateNumberOfFiles(DirectoryTreeNode rootNode);
     }
 }

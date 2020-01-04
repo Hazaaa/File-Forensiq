@@ -14,6 +14,7 @@ namespace FileForensiq.Core.Models
         {
             Size = 0;
             NumberOfFiles = 0;
+            Expanded = false;
         }
 
         /// <summary>
@@ -25,5 +26,11 @@ namespace FileForensiq.Core.Models
         /// Number of files in directory including his sub-directories.
         /// </summary>
         public int NumberOfFiles { get; set; }
+
+
+        /// <summary>
+        /// Bool that indicates if node has been expanded.
+        /// </summary>
+        public bool Expanded { get; set; }
     }
 }

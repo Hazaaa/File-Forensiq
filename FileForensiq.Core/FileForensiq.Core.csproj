@@ -45,8 +45,8 @@
   <ItemGroup>
     <Compile Include="FileSystemManipulation.cs" />
     <Compile Include="Interfaces\IFileSystemManipulation.cs" />
+    <Compile Include="Models\ChildNodesResult.cs" />
     <Compile Include="Models\DirectoryTreeNode.cs" />
-    <Compile Include="Models\PartitionProcessingResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

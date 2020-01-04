@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnSearch = new System.Windows.Forms.Button();
-            this.lblResultStats = new System.Windows.Forms.Label();
             this.tvFileSystem = new System.Windows.Forms.TreeView();
             this.imglFilesIcons = new System.Windows.Forms.ImageList(this.components);
             this.cbxPartitionLetters = new System.Windows.Forms.ComboBox();
@@ -39,7 +38,6 @@
             this.cbxSortBy = new System.Windows.Forms.ComboBox();
             this.lblMemoryUsage = new System.Windows.Forms.Label();
             this.lblMemoryMB = new System.Windows.Forms.Label();
-            this.timer = new System.Windows.Forms.Timer(this.components);
             this.lblSortArrow = new System.Windows.Forms.Label();
             this.pbxLoading = new System.Windows.Forms.PictureBox();
             this.btnErrorLog = new System.Windows.Forms.Button();
@@ -68,6 +66,7 @@
             this.bgwCache = new System.ComponentModel.BackgroundWorker();
             this.cbxCacheEvery = new System.Windows.Forms.ComboBox();
             this.lblCacheEveryLabel = new System.Windows.Forms.Label();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
             this.pnlFolderDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).BeginInit();
@@ -75,33 +74,26 @@
             // 
             // btnSearch
             // 
-            this.btnSearch.Location = new System.Drawing.Point(83, 11);
+            this.btnSearch.Location = new System.Drawing.Point(111, 14);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(4);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(87, 23);
+            this.btnSearch.Size = new System.Drawing.Size(116, 28);
             this.btnSearch.TabIndex = 0;
             this.btnSearch.Text = "Process";
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
-            // lblResultStats
-            // 
-            this.lblResultStats.AutoSize = true;
-            this.lblResultStats.Location = new System.Drawing.Point(10, 45);
-            this.lblResultStats.Name = "lblResultStats";
-            this.lblResultStats.Size = new System.Drawing.Size(94, 13);
-            this.lblResultStats.TabIndex = 1;
-            this.lblResultStats.Text = "Search result stats";
-            this.lblResultStats.Visible = false;
-            // 
             // tvFileSystem
             // 
             this.tvFileSystem.ImageIndex = 0;
             this.tvFileSystem.ImageList = this.imglFilesIcons;
-            this.tvFileSystem.Location = new System.Drawing.Point(12, 93);
+            this.tvFileSystem.Location = new System.Drawing.Point(16, 114);
+            this.tvFileSystem.Margin = new System.Windows.Forms.Padding(4);
             this.tvFileSystem.Name = "tvFileSystem";
             this.tvFileSystem.SelectedImageIndex = 0;
-            this.tvFileSystem.Size = new System.Drawing.Size(419, 333);
+            this.tvFileSystem.Size = new System.Drawing.Size(557, 409);
             this.tvFileSystem.TabIndex = 2;
+            this.tvFileSystem.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvFileSystem_BeforeExpand);
             this.tvFileSystem.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvFileSystem_AfterSelect);
             this.tvFileSystem.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvFileSystem_NodeMouseDoubleClick);
             // 
@@ -157,18 +149,20 @@
             // 
             this.cbxPartitionLetters.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxPartitionLetters.FormattingEnabled = true;
-            this.cbxPartitionLetters.Location = new System.Drawing.Point(12, 12);
+            this.cbxPartitionLetters.Location = new System.Drawing.Point(16, 15);
+            this.cbxPartitionLetters.Margin = new System.Windows.Forms.Padding(4);
             this.cbxPartitionLetters.Name = "cbxPartitionLetters";
-            this.cbxPartitionLetters.Size = new System.Drawing.Size(65, 21);
+            this.cbxPartitionLetters.Size = new System.Drawing.Size(85, 24);
             this.cbxPartitionLetters.TabIndex = 3;
             this.cbxPartitionLetters.Click += new System.EventHandler(this.cbxPartitionLetters_Click);
             // 
             // lblSort
             // 
             this.lblSort.AutoSize = true;
-            this.lblSort.Location = new System.Drawing.Point(10, 70);
+            this.lblSort.Location = new System.Drawing.Point(13, 86);
+            this.lblSort.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSort.Name = "lblSort";
-            this.lblSort.Size = new System.Drawing.Size(43, 13);
+            this.lblSort.Size = new System.Drawing.Size(57, 17);
             this.lblSort.TabIndex = 5;
             this.lblSort.Text = "Sort by:";
             // 
@@ -184,41 +178,41 @@
             "Time Created",
             "Last Write",
             "Last Access"});
-            this.cbxSortBy.Location = new System.Drawing.Point(59, 66);
+            this.cbxSortBy.Location = new System.Drawing.Point(79, 81);
+            this.cbxSortBy.Margin = new System.Windows.Forms.Padding(4);
             this.cbxSortBy.Name = "cbxSortBy";
-            this.cbxSortBy.Size = new System.Drawing.Size(100, 21);
+            this.cbxSortBy.Size = new System.Drawing.Size(132, 24);
             this.cbxSortBy.TabIndex = 6;
             this.cbxSortBy.SelectedIndexChanged += new System.EventHandler(this.cbxSortBy_SelectedIndexChanged);
             // 
             // lblMemoryUsage
             // 
             this.lblMemoryUsage.AutoSize = true;
-            this.lblMemoryUsage.Location = new System.Drawing.Point(250, 438);
+            this.lblMemoryUsage.Location = new System.Drawing.Point(333, 539);
+            this.lblMemoryUsage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMemoryUsage.Name = "lblMemoryUsage";
-            this.lblMemoryUsage.Size = new System.Drawing.Size(79, 13);
+            this.lblMemoryUsage.Size = new System.Drawing.Size(105, 17);
             this.lblMemoryUsage.TabIndex = 7;
             this.lblMemoryUsage.Text = "Memory usage:";
             // 
             // lblMemoryMB
             // 
             this.lblMemoryMB.AutoSize = true;
-            this.lblMemoryMB.Location = new System.Drawing.Point(328, 439);
+            this.lblMemoryMB.Location = new System.Drawing.Point(437, 540);
+            this.lblMemoryMB.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMemoryMB.Name = "lblMemoryMB";
-            this.lblMemoryMB.Size = new System.Drawing.Size(74, 13);
+            this.lblMemoryMB.Size = new System.Drawing.Size(97, 17);
             this.lblMemoryMB.TabIndex = 8;
             this.lblMemoryMB.Text = "Memory in MB";
-            // 
-            // timer
-            // 
-            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // lblSortArrow
             // 
             this.lblSortArrow.AutoSize = true;
             this.lblSortArrow.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSortArrow.Location = new System.Drawing.Point(163, 66);
+            this.lblSortArrow.Location = new System.Drawing.Point(217, 81);
+            this.lblSortArrow.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSortArrow.Name = "lblSortArrow";
-            this.lblSortArrow.Size = new System.Drawing.Size(17, 18);
+            this.lblSortArrow.Size = new System.Drawing.Size(21, 24);
             this.lblSortArrow.TabIndex = 10;
             this.lblSortArrow.Text = "↓";
             this.lblSortArrow.Visible = false;
@@ -228,9 +222,10 @@
             // 
             this.pbxLoading.BackColor = System.Drawing.Color.Transparent;
             this.pbxLoading.Image = global::FileForensiq.UI.Properties.Resources.LoadingGif;
-            this.pbxLoading.Location = new System.Drawing.Point(171, 9);
+            this.pbxLoading.Location = new System.Drawing.Point(228, 11);
+            this.pbxLoading.Margin = new System.Windows.Forms.Padding(4);
             this.pbxLoading.Name = "pbxLoading";
-            this.pbxLoading.Size = new System.Drawing.Size(44, 26);
+            this.pbxLoading.Size = new System.Drawing.Size(59, 32);
             this.pbxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pbxLoading.TabIndex = 4;
             this.pbxLoading.TabStop = false;
@@ -238,9 +233,10 @@
             // 
             // btnErrorLog
             // 
-            this.btnErrorLog.Location = new System.Drawing.Point(170, 432);
+            this.btnErrorLog.Location = new System.Drawing.Point(227, 532);
+            this.btnErrorLog.Margin = new System.Windows.Forms.Padding(4);
             this.btnErrorLog.Name = "btnErrorLog";
-            this.btnErrorLog.Size = new System.Drawing.Size(75, 23);
+            this.btnErrorLog.Size = new System.Drawing.Size(100, 28);
             this.btnErrorLog.TabIndex = 13;
             this.btnErrorLog.Text = "⚠ Error Log";
             this.btnErrorLog.UseVisualStyleBackColor = true;
@@ -260,18 +256,20 @@
             this.pnlFolderDetails.Controls.Add(this.lblSizeLabel);
             this.pnlFolderDetails.Controls.Add(this.lblFolderFileName);
             this.pnlFolderDetails.Controls.Add(this.lblFolderFileLabel);
-            this.pnlFolderDetails.Location = new System.Drawing.Point(444, 9);
+            this.pnlFolderDetails.Location = new System.Drawing.Point(592, 11);
+            this.pnlFolderDetails.Margin = new System.Windows.Forms.Padding(4);
             this.pnlFolderDetails.Name = "pnlFolderDetails";
-            this.pnlFolderDetails.Size = new System.Drawing.Size(388, 118);
+            this.pnlFolderDetails.Size = new System.Drawing.Size(517, 145);
             this.pnlFolderDetails.TabIndex = 14;
             // 
             // lblFolderFileType
             // 
             this.lblFolderFileType.AutoSize = true;
             this.lblFolderFileType.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFolderFileType.Location = new System.Drawing.Point(118, 63);
+            this.lblFolderFileType.Location = new System.Drawing.Point(157, 78);
+            this.lblFolderFileType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFolderFileType.Name = "lblFolderFileType";
-            this.lblFolderFileType.Size = new System.Drawing.Size(29, 15);
+            this.lblFolderFileType.Size = new System.Drawing.Size(35, 18);
             this.lblFolderFileType.TabIndex = 11;
             this.lblFolderFileType.Text = "type";
             this.lblFolderFileType.Visible = false;
@@ -280,9 +278,10 @@
             // 
             this.lblTypeLabel.AutoSize = true;
             this.lblTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTypeLabel.Location = new System.Drawing.Point(67, 63);
+            this.lblTypeLabel.Location = new System.Drawing.Point(89, 78);
+            this.lblTypeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTypeLabel.Name = "lblTypeLabel";
-            this.lblTypeLabel.Size = new System.Drawing.Size(41, 15);
+            this.lblTypeLabel.Size = new System.Drawing.Size(49, 18);
             this.lblTypeLabel.TabIndex = 10;
             this.lblTypeLabel.Text = "Type:";
             // 
@@ -290,9 +289,10 @@
             // 
             this.lblFolderFileLastModify.AutoSize = true;
             this.lblFolderFileLastModify.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFolderFileLastModify.Location = new System.Drawing.Point(267, 88);
+            this.lblFolderFileLastModify.Location = new System.Drawing.Point(356, 108);
+            this.lblFolderFileLastModify.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFolderFileLastModify.Name = "lblFolderFileLastModify";
-            this.lblFolderFileLastModify.Size = new System.Drawing.Size(65, 15);
+            this.lblFolderFileLastModify.Size = new System.Drawing.Size(79, 18);
             this.lblFolderFileLastModify.TabIndex = 9;
             this.lblFolderFileLastModify.Text = "last modify";
             this.lblFolderFileLastModify.Visible = false;
@@ -301,9 +301,10 @@
             // 
             this.lblLastModifyLabel.AutoSize = true;
             this.lblLastModifyLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLastModifyLabel.Location = new System.Drawing.Point(174, 88);
+            this.lblLastModifyLabel.Location = new System.Drawing.Point(232, 108);
+            this.lblLastModifyLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLastModifyLabel.Name = "lblLastModifyLabel";
-            this.lblLastModifyLabel.Size = new System.Drawing.Size(84, 15);
+            this.lblLastModifyLabel.Size = new System.Drawing.Size(100, 18);
             this.lblLastModifyLabel.TabIndex = 8;
             this.lblLastModifyLabel.Text = "Last modify:";
             // 
@@ -311,9 +312,10 @@
             // 
             this.lblFileFolderLastAccess.AutoSize = true;
             this.lblFileFolderLastAccess.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFileFolderLastAccess.Location = new System.Drawing.Point(267, 63);
+            this.lblFileFolderLastAccess.Location = new System.Drawing.Point(356, 78);
+            this.lblFileFolderLastAccess.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFileFolderLastAccess.Name = "lblFileFolderLastAccess";
-            this.lblFileFolderLastAccess.Size = new System.Drawing.Size(67, 15);
+            this.lblFileFolderLastAccess.Size = new System.Drawing.Size(83, 18);
             this.lblFileFolderLastAccess.TabIndex = 7;
             this.lblFileFolderLastAccess.Text = "last access";
             this.lblFileFolderLastAccess.Visible = false;
@@ -322,9 +324,10 @@
             // 
             this.lblLastAccessLabel.AutoSize = true;
             this.lblLastAccessLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLastAccessLabel.Location = new System.Drawing.Point(172, 63);
+            this.lblLastAccessLabel.Location = new System.Drawing.Point(229, 78);
+            this.lblLastAccessLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLastAccessLabel.Name = "lblLastAccessLabel";
-            this.lblLastAccessLabel.Size = new System.Drawing.Size(86, 15);
+            this.lblLastAccessLabel.Size = new System.Drawing.Size(104, 18);
             this.lblLastAccessLabel.TabIndex = 6;
             this.lblLastAccessLabel.Text = "Last access:";
             // 
@@ -332,9 +335,10 @@
             // 
             this.lblFolderFileCreated.AutoSize = true;
             this.lblFolderFileCreated.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFolderFileCreated.Location = new System.Drawing.Point(267, 39);
+            this.lblFolderFileCreated.Location = new System.Drawing.Point(356, 48);
+            this.lblFolderFileCreated.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFolderFileCreated.Name = "lblFolderFileCreated";
-            this.lblFolderFileCreated.Size = new System.Drawing.Size(48, 15);
+            this.lblFolderFileCreated.Size = new System.Drawing.Size(57, 18);
             this.lblFolderFileCreated.TabIndex = 5;
             this.lblFolderFileCreated.Text = "created";
             this.lblFolderFileCreated.Visible = false;
@@ -343,9 +347,10 @@
             // 
             this.lblCreatedLabel.AutoSize = true;
             this.lblCreatedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCreatedLabel.Location = new System.Drawing.Point(197, 39);
+            this.lblCreatedLabel.Location = new System.Drawing.Point(263, 48);
+            this.lblCreatedLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCreatedLabel.Name = "lblCreatedLabel";
-            this.lblCreatedLabel.Size = new System.Drawing.Size(61, 15);
+            this.lblCreatedLabel.Size = new System.Drawing.Size(72, 18);
             this.lblCreatedLabel.TabIndex = 4;
             this.lblCreatedLabel.Text = "Created:";
             // 
@@ -353,9 +358,10 @@
             // 
             this.lblFolderFileSize.AutoSize = true;
             this.lblFolderFileSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFolderFileSize.Location = new System.Drawing.Point(117, 39);
+            this.lblFolderFileSize.Location = new System.Drawing.Point(156, 48);
+            this.lblFolderFileSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFolderFileSize.Name = "lblFolderFileSize";
-            this.lblFolderFileSize.Size = new System.Drawing.Size(29, 15);
+            this.lblFolderFileSize.Size = new System.Drawing.Size(35, 18);
             this.lblFolderFileSize.TabIndex = 3;
             this.lblFolderFileSize.Text = "size";
             this.lblFolderFileSize.Visible = false;
@@ -364,9 +370,10 @@
             // 
             this.lblSizeLabel.AutoSize = true;
             this.lblSizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSizeLabel.Location = new System.Drawing.Point(70, 39);
+            this.lblSizeLabel.Location = new System.Drawing.Point(93, 48);
+            this.lblSizeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSizeLabel.Name = "lblSizeLabel";
-            this.lblSizeLabel.Size = new System.Drawing.Size(39, 15);
+            this.lblSizeLabel.Size = new System.Drawing.Size(46, 18);
             this.lblSizeLabel.TabIndex = 2;
             this.lblSizeLabel.Text = "Size:";
             // 
@@ -374,9 +381,10 @@
             // 
             this.lblFolderFileName.AutoSize = true;
             this.lblFolderFileName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFolderFileName.Location = new System.Drawing.Point(116, 14);
+            this.lblFolderFileName.Location = new System.Drawing.Point(155, 17);
+            this.lblFolderFileName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFolderFileName.Name = "lblFolderFileName";
-            this.lblFolderFileName.Size = new System.Drawing.Size(42, 16);
+            this.lblFolderFileName.Size = new System.Drawing.Size(50, 20);
             this.lblFolderFileName.TabIndex = 1;
             this.lblFolderFileName.Text = "name";
             this.lblFolderFileName.Visible = false;
@@ -385,9 +393,10 @@
             // 
             this.lblFolderFileLabel.AutoSize = true;
             this.lblFolderFileLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFolderFileLabel.Location = new System.Drawing.Point(13, 11);
+            this.lblFolderFileLabel.Location = new System.Drawing.Point(17, 14);
+            this.lblFolderFileLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFolderFileLabel.Name = "lblFolderFileLabel";
-            this.lblFolderFileLabel.Size = new System.Drawing.Size(99, 20);
+            this.lblFolderFileLabel.Size = new System.Drawing.Size(122, 25);
             this.lblFolderFileLabel.TabIndex = 0;
             this.lblFolderFileLabel.Text = "Folder/File:";
             // 
@@ -406,12 +415,14 @@
             this.colTimeCreated,
             this.colLastAccess,
             this.colLastModify});
-            this.dgvFiles.Location = new System.Drawing.Point(444, 145);
+            this.dgvFiles.Location = new System.Drawing.Point(592, 178);
+            this.dgvFiles.Margin = new System.Windows.Forms.Padding(4);
             this.dgvFiles.Name = "dgvFiles";
             this.dgvFiles.ReadOnly = true;
             this.dgvFiles.RowHeadersVisible = false;
+            this.dgvFiles.RowHeadersWidth = 51;
             this.dgvFiles.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvFiles.Size = new System.Drawing.Size(388, 280);
+            this.dgvFiles.Size = new System.Drawing.Size(517, 345);
             this.dgvFiles.TabIndex = 15;
             // 
             // colFileName
@@ -419,57 +430,65 @@
             this.colFileName.DataPropertyName = "Name";
             this.colFileName.Frozen = true;
             this.colFileName.HeaderText = "Name:";
+            this.colFileName.MinimumWidth = 6;
             this.colFileName.Name = "colFileName";
             this.colFileName.ReadOnly = true;
+            this.colFileName.Width = 125;
             // 
             // colType
             // 
             this.colType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.colType.DataPropertyName = "Extension";
             this.colType.HeaderText = "Type:";
+            this.colType.MinimumWidth = 6;
             this.colType.Name = "colType";
             this.colType.ReadOnly = true;
-            this.colType.Width = 59;
+            this.colType.Width = 73;
             // 
             // colLength
             // 
             this.colLength.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.colLength.DataPropertyName = "Length";
             this.colLength.HeaderText = "Size:";
+            this.colLength.MinimumWidth = 6;
             this.colLength.Name = "colLength";
             this.colLength.ReadOnly = true;
-            this.colLength.Width = 55;
+            this.colLength.Width = 68;
             // 
             // colTimeCreated
             // 
             this.colTimeCreated.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.colTimeCreated.HeaderText = "Time Created:";
+            this.colTimeCreated.MinimumWidth = 6;
             this.colTimeCreated.Name = "colTimeCreated";
             this.colTimeCreated.ReadOnly = true;
-            this.colTimeCreated.Width = 98;
+            this.colTimeCreated.Width = 126;
             // 
             // colLastAccess
             // 
             this.colLastAccess.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.colLastAccess.HeaderText = "Last Access:";
+            this.colLastAccess.MinimumWidth = 6;
             this.colLastAccess.Name = "colLastAccess";
             this.colLastAccess.ReadOnly = true;
-            this.colLastAccess.Width = 93;
+            this.colLastAccess.Width = 117;
             // 
             // colLastModify
             // 
             this.colLastModify.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.colLastModify.HeaderText = "Last Modify:";
+            this.colLastModify.MinimumWidth = 6;
             this.colLastModify.Name = "colLastModify";
             this.colLastModify.ReadOnly = true;
-            this.colLastModify.Width = 89;
+            this.colLastModify.Width = 113;
             // 
             // lblLastCache
             // 
             this.lblLastCache.AutoSize = true;
-            this.lblLastCache.Location = new System.Drawing.Point(447, 440);
+            this.lblLastCache.Location = new System.Drawing.Point(594, 541);
+            this.lblLastCache.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLastCache.Name = "lblLastCache";
-            this.lblLastCache.Size = new System.Drawing.Size(80, 13);
+            this.lblLastCache.Size = new System.Drawing.Size(104, 17);
             this.lblLastCache.TabIndex = 17;
             this.lblLastCache.Text = "last cache date";
             this.lblLastCache.Visible = false;
@@ -477,9 +496,10 @@
             // lblLastCacheLabel
             // 
             this.lblLastCacheLabel.AutoSize = true;
-            this.lblLastCacheLabel.Location = new System.Drawing.Point(382, 439);
+            this.lblLastCacheLabel.Location = new System.Drawing.Point(509, 540);
+            this.lblLastCacheLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLastCacheLabel.Name = "lblLastCacheLabel";
-            this.lblLastCacheLabel.Size = new System.Drawing.Size(63, 13);
+            this.lblLastCacheLabel.Size = new System.Drawing.Size(81, 17);
             this.lblLastCacheLabel.TabIndex = 16;
             this.lblLastCacheLabel.Text = "Last cache:";
             this.lblLastCacheLabel.Visible = false;
@@ -497,27 +517,33 @@
             "10 minutes",
             "30 minutes",
             "60 minutes"});
-            this.cbxCacheEvery.Location = new System.Drawing.Point(88, 433);
+            this.cbxCacheEvery.Location = new System.Drawing.Point(117, 533);
+            this.cbxCacheEvery.Margin = new System.Windows.Forms.Padding(4);
             this.cbxCacheEvery.Name = "cbxCacheEvery";
-            this.cbxCacheEvery.Size = new System.Drawing.Size(76, 21);
+            this.cbxCacheEvery.Size = new System.Drawing.Size(100, 24);
             this.cbxCacheEvery.TabIndex = 20;
             this.cbxCacheEvery.SelectedIndexChanged += new System.EventHandler(this.cbxCacheEvery_SelectedIndexChanged);
             // 
             // lblCacheEveryLabel
             // 
             this.lblCacheEveryLabel.AutoSize = true;
-            this.lblCacheEveryLabel.Location = new System.Drawing.Point(12, 437);
+            this.lblCacheEveryLabel.Location = new System.Drawing.Point(16, 538);
+            this.lblCacheEveryLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCacheEveryLabel.Name = "lblCacheEveryLabel";
-            this.lblCacheEveryLabel.Size = new System.Drawing.Size(70, 13);
+            this.lblCacheEveryLabel.Size = new System.Drawing.Size(91, 17);
             this.lblCacheEveryLabel.TabIndex = 21;
             this.lblCacheEveryLabel.Text = "Cache every:";
             // 
+            // timer
+            // 
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
+            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(847, 463);
+            this.ClientSize = new System.Drawing.Size(1129, 570);
             this.Controls.Add(this.lblCacheEveryLabel);
             this.Controls.Add(this.cbxCacheEvery);
             this.Controls.Add(this.lblLastCache);
@@ -533,10 +559,10 @@
             this.Controls.Add(this.pbxLoading);
             this.Controls.Add(this.cbxPartitionLetters);
             this.Controls.Add(this.tvFileSystem);
-            this.Controls.Add(this.lblResultStats);
             this.Controls.Add(this.btnSearch);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "File Forensiq";
@@ -554,7 +580,6 @@
         #endregion
 
         private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.Label lblResultStats;
         private System.Windows.Forms.TreeView tvFileSystem;
         private System.Windows.Forms.ComboBox cbxPartitionLetters;
         private System.Windows.Forms.PictureBox pbxLoading;
@@ -563,7 +588,6 @@
         private System.Windows.Forms.ComboBox cbxSortBy;
         private System.Windows.Forms.Label lblMemoryUsage;
         private System.Windows.Forms.Label lblMemoryMB;
-        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label lblSortArrow;
         private System.Windows.Forms.Button btnErrorLog;
         private System.Windows.Forms.Panel pnlFolderDetails;
@@ -591,6 +615,7 @@
         private System.ComponentModel.BackgroundWorker bgwCache;
         private System.Windows.Forms.ComboBox cbxCacheEvery;
         private System.Windows.Forms.Label lblCacheEveryLabel;
+        private System.Windows.Forms.Timer timer;
     }
 }
 
