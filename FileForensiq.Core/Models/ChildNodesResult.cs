@@ -11,10 +11,12 @@ namespace FileForensiq.Core.Models
     {
         public List<TreeNode> ChildNodes { get; set; }
         public Exception Error { get; set; }
+        public long Size { get; set; }
 
         public ChildNodesResult()
         {
             ChildNodes = new List<TreeNode>();
+            Size = 0;
         }
     }
 }

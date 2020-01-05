@@ -15,6 +15,8 @@ namespace FileForensiq.Core.Models
             Size = 0;
             NumberOfFiles = 0;
             Expanded = false;
+            SizeCalculated = false;
+            NumberOfFilesCalculated = false;
         }
 
         /// <summary>
@@ -32,5 +34,15 @@ namespace FileForensiq.Core.Models
         /// Bool that indicates if node has been expanded.
         /// </summary>
         public bool Expanded { get; set; }
+
+        /// <summary>
+        /// Bool that indicates if size of directory has been calculated.
+        /// </summary>
+        public bool SizeCalculated { get; set; }
+
+        /// <summary>
+        /// Bool that indicates if number of files of directory has been calculated.
+        /// </summary>
+        public bool NumberOfFilesCalculated { get; set; }
     }
 }

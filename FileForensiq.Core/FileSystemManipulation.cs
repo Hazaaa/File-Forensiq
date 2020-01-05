@@ -66,66 +66,70 @@ namespace FileForensiq.Core
         }
 
         /// <summary>
-        /// Calculates size for every dictionary in bytes.
+        /// Calculates size for dictionary in bytes.
         /// </summary>
-        /// <param name="rootNode">Root node.</param>
-        public long CalculateDirectorySize(DirectoryTreeNode rootNode)
+        /// <param name="directory">Directory for which size is calculated.</param>
+        public long CalculateDirectorySize(DirectoryInfo directory)
         {
-            if(rootNode == null)
+            if(directory == null)
             {
                 return 0;
             }
 
-            foreach (var directory in rootNode.Nodes)
+            long size = 0;
+
+            try
             {
-                if(directory is DirectoryTreeNode)
+                var subDirectories = directory.EnumerateDirectories();
+                var files = directory.EnumerateFiles();
+
+                foreach (var subdirectory in subDirectories)
                 {
-                    rootNode.Size += CalculateDirectorySize((DirectoryTreeNode)directory);
+                    size += CalculateDirectorySize(subdirectory);
+                }
+
+                foreach (var file in files)
+                {
+                    size += file.Length;
                 }
             }
-
-            // Displaying size of files in KB, MB, GB or TB
-            var rootSize = ((rootNode.Size) / 1024f) / 1024f;
-            if (rootSize < 1.0)
+            catch (Exception)
             {
-                rootNode.Text += " (" + (rootNode.Size) / 1024f + " KB)";
-            }
-            else if(rootSize > 1000)
-            {
-                rootNode.Text += " (" + rootSize / 1000f + " GB)";
-            } 
-            else if(rootSize > 1000000)
-            {
-                rootNode.Text += " (" + (rootSize / 953674f) + " TB)";
-            } 
-            else
-            {
-                rootNode.Text += " (" + rootSize + " MB)";
+                return 0;
             }
 
-            return rootNode.Size;
+            return size;
         }
 
         /// <summary>
         /// Calculates number of files for every dictionary including files in his sub-directories.
         /// </summary>
         /// <param name="rootNode">Root node.</param>
-        public int CalculateNumberOfFiles(DirectoryTreeNode rootNode)
+        public int CalculateNumberOfFiles(DirectoryInfo rootNode)
         {
             if (rootNode == null)
             {
                 return 0;
             }
 
-            foreach (var directory in rootNode.Nodes)
+            var result = 0;
+
+            try
             {
-                if (directory is DirectoryTreeNode)
+                var subDirectories = rootNode.EnumerateDirectories();
+                foreach (var subDirectory in subDirectories)
                 {
-                    rootNode.NumberOfFiles += CalculateNumberOfFiles((DirectoryTreeNode)directory);
+                    result += CalculateNumberOfFiles(subDirectory);
                 }
+
+                result += rootNode.EnumerateFiles().Count();
+            }
+            catch (Exception)
+            {
+                return 0;
             }
 
-            return rootNode.NumberOfFiles;
+            return result;
         }
 
         /// <summary>

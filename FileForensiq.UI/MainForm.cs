@@ -4,6 +4,7 @@ using FileForensiq.UI.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -19,6 +20,17 @@ namespace FileForensiq.UI
 
         private bool sortDescending = true;
 
+        public string CacheTime { 
+            get 
+            {
+                return GetConfigSetting("CacheTime");
+            } 
+            set
+            {
+                SetConfigSetting("CacheTime",value);
+            }
+        }
+
         public MainForm()
         {
             InitializeComponent();
@@ -32,6 +44,7 @@ namespace FileForensiq.UI
             SetPartitionLettersCombobox();
             timer.Start();
             tvFileSystem.TreeViewNodeSorter = new TreeNodeSorter();
+            cbxCacheEvery.SelectedItem = CacheTime;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -156,12 +169,15 @@ namespace FileForensiq.UI
 
         private void cbxCacheEvery_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //CacheTime = cbxCacheEvery.SelectedItem.ToString();
+            CacheTime = cbxCacheEvery.SelectedItem.ToString();
         }
 
         private void bgwCache_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            
+            var selectedDrive = e.Argument;
+
+            // TODO: CACHE
+            e.Result = true;
         }
 
         private void bgwCache_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -177,6 +193,10 @@ namespace FileForensiq.UI
                     lblLastCache.Visible = true;
                     lblLastCacheLabel.Visible = true;
                     lblLastCache.Text = DateTime.Now.ToString();
+                    SetConfigSetting("LastCache-" + cbxPartitionLetters.SelectedItem?.ToString(), DateTime.Now.ToString());
+                } else
+                {
+                    MessageBox.Show("Unable to cache data.", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -186,7 +206,7 @@ namespace FileForensiq.UI
 
         #region Helpers
 
-        public void LoadFileTreeView()
+        public async void LoadFileTreeView()
         {
             btnSearch.Text = "Processing...";
             btnSearch.Enabled = false;
@@ -209,7 +229,7 @@ namespace FileForensiq.UI
                 ImageKey = "harddisk.png",
                 SelectedImageKey = "harddisk.png"
             };
-            var childs = filesManipulation.GetDirectoryChildren(selectedDrive);
+            var childs = await Task.Run(() => filesManipulation.GetDirectoryChildren(selectedDrive));
 
             // Showing results and configurating some controls
             if (childs.Error == null)
@@ -225,10 +245,10 @@ namespace FileForensiq.UI
 
                 tvFileSystem.EndUpdate();
 
-                //if (!CheckIfIsCached(selectedDrive))
-                //{
-                //    CacheData(files);
-                //}
+                if (!CheckIfIsCached(selectedDrive))
+                {
+                    CacheData(selectedDrive);
+                }
             } 
             else
             {
@@ -240,22 +260,38 @@ namespace FileForensiq.UI
             btnSearch.Enabled = true;
         }
 
-        public void CacheData()
+        public void SetConfigSetting(string key, string value)
         {
-            bgwCache.RunWorkerAsync();
+            Configuration config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath);
+            config.AppSettings.Settings.Remove(key);
+            config.AppSettings.Settings.Add(key, value);
+            config.Save(ConfigurationSaveMode.Minimal);
         }
 
-        //public bool CheckIfIsCached(string selectedDrive)
-        //{
-        //    return lblLastCache.Visible && !CheckIfCacheExpired();
-        //}
+        public string GetConfigSetting(string key)
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath);
+            var result = config.AppSettings.Settings[key];
+            return result == null ? "" : result.Value;
+        }
 
-        //public bool CheckIfCacheExpired()
-        //{
-        //    var result = DateTime.Compare(DateTime.Now, DateTime.Parse(lblLastCache.Text).AddMinutes(CacheTime == "" ? 10 : int.Parse(CacheTime.Substring(0,1))));
+        public void CacheData(string selectedDrive)
+        {
+            lblLastCache.Visible = true;
+            lblLastCache.Text = "Caching in progress...";
+            bgwCache.RunWorkerAsync(argument: selectedDrive);
+        }
 
-        //    return result == 1 ? true : false;
-        //}
+        public bool CheckIfIsCached(string selectedDrive)
+        {
+            return GetConfigSetting("LastCache-" + selectedDrive) != "" && !CheckIfCacheExpired(selectedDrive);
+        }
+
+        public bool CheckIfCacheExpired(string selectedDrive)
+        {
+            var result = DateTime.Compare(DateTime.Now, DateTime.Parse(GetConfigSetting("LastCache-" + selectedDrive)).AddMinutes(CacheTime == "" ? 10 : int.Parse(CacheTime.Substring(0, 1))));
+            return result == 1 ? true : false;
+        }
 
         public void SetPartitionLettersCombobox()
         {
@@ -398,12 +434,13 @@ namespace FileForensiq.UI
             }
         }
 
-        public void ShowDirectoryFileDetails(bool directory, TreeNode selectedNode)
+        public async void ShowDirectoryFileDetails(bool directory, TreeNode selectedNode)
         {
             dgvFiles.Rows.Clear();
             if (directory)
             {
                 var dirInfo = selectedNode.Tag as DirectoryInfo;
+                var directoryNode = selectedNode as DirectoryTreeNode;
 
                 SetResetPositionOfDetailsLabels(true);
 
@@ -411,26 +448,46 @@ namespace FileForensiq.UI
                 lblFolderFileName.Text = dirInfo.Name;
 
                 lblTypeLabel.Text = "Number of files:";
-                lblFolderFileType.Text = (selectedNode as DirectoryTreeNode).NumberOfFiles.ToString();
+                lblFolderFileType.Text = "...";
 
-                lblFolderFileSize.Text = DisplayFileSize((selectedNode as DirectoryTreeNode).Size);
+                lblFolderFileSize.Text = "...";
 
                 lblFolderFileCreated.Text = dirInfo.CreationTime.ToString();
                 lblFileFolderLastAccess.Text = dirInfo.LastAccessTime.ToString();
                 lblFolderFileLastModify.Text = dirInfo.LastWriteTime.ToString();
 
-                //Show files in DataGridView
-                foreach(var file in selectedNode.Nodes.Cast<TreeNode>().Where(x => !(x is DirectoryTreeNode)).Select(x => x.Tag as FileInfo))
+                try
                 {
-                    int row = dgvFiles.Rows.Count;
-                    dgvFiles.Rows.Add();
-                    dgvFiles.Rows[row].Cells[0].Value = file.Name;
-                    dgvFiles.Rows[row].Cells[1].Value = file.Extension;
-                    dgvFiles.Rows[row].Cells[2].Value = DisplayFileSize(file.Length);
-                    dgvFiles.Rows[row].Cells[3].Value = file.CreationTime;
-                    dgvFiles.Rows[row].Cells[4].Value = file.LastAccessTime;
-                    dgvFiles.Rows[row].Cells[5].Value = file.LastWriteTime;
+                    //Show files in DataGridView
+                    foreach (var file in dirInfo.EnumerateFiles())
+                    {
+                        int row = dgvFiles.Rows.Count;
+                        dgvFiles.Rows.Add();
+                        dgvFiles.Rows[row].Cells[0].Value = file.Name;
+                        dgvFiles.Rows[row].Cells[1].Value = file.Extension;
+                        dgvFiles.Rows[row].Cells[2].Value = DisplayFileSize(file.Length);
+                        dgvFiles.Rows[row].Cells[3].Value = file.CreationTime;
+                        dgvFiles.Rows[row].Cells[4].Value = file.LastAccessTime;
+                        dgvFiles.Rows[row].Cells[5].Value = file.LastWriteTime;
+                    }
+
+                    if(!directoryNode.NumberOfFilesCalculated)
+                    {
+                        directoryNode.NumberOfFiles = await Task.Run(() => filesManipulation.CalculateNumberOfFiles(dirInfo));
+                        directoryNode.NumberOfFilesCalculated = true;
+                    }
+                    lblFolderFileType.Text = directoryNode.NumberOfFiles.ToString();
+
+                    if(!directoryNode.SizeCalculated)
+                    {
+                        directoryNode.Size = await Task.Run(() => filesManipulation.CalculateDirectorySize(dirInfo));
+                        directoryNode.SizeCalculated = true;
+                    }
+                    lblFolderFileSize.Text = DisplayFileSize(directoryNode.Size);
                 }
+                catch (Exception)
+                {
+                } 
             }
             else
             {

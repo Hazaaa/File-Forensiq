@@ -485,7 +485,7 @@
             // lblLastCache
             // 
             this.lblLastCache.AutoSize = true;
-            this.lblLastCache.Location = new System.Drawing.Point(594, 541);
+            this.lblLastCache.Location = new System.Drawing.Point(590, 540);
             this.lblLastCache.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLastCache.Name = "lblLastCache";
             this.lblLastCache.Size = new System.Drawing.Size(104, 17);
