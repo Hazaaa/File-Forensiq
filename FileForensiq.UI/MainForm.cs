@@ -20,6 +20,22 @@ namespace FileForensiq.UI
 
         private bool sortDescending = true;
 
+        private ErrorForm ef;
+
+        public ErrorForm ErrorForm {
+            get
+            {
+                if (ef == null || ef.IsDisposed)
+                {
+                    ef = new ErrorForm();
+                    return ef;
+                }
+                else
+                {
+                    return ef;
+                }
+            } }
+
         public string CacheTime { 
             get 
             {
@@ -57,6 +73,11 @@ namespace FileForensiq.UI
         {
             long memoryUsage = (Process.GetCurrentProcess().PrivateMemorySize64 / 1024) / 1024;
             lblMemoryMB.Text = String.Format("~ {0} MB", memoryUsage.ToString());
+        }
+
+        private void btnErrorLog_Click(object sender, EventArgs e)
+        {
+            ErrorForm.Show();
         }
 
         private void btnSearch_Click(object sender, EventArgs e)

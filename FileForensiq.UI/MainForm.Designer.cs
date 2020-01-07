@@ -39,7 +39,6 @@
             this.lblMemoryUsage = new System.Windows.Forms.Label();
             this.lblMemoryMB = new System.Windows.Forms.Label();
             this.lblSortArrow = new System.Windows.Forms.Label();
-            this.pbxLoading = new System.Windows.Forms.PictureBox();
             this.btnErrorLog = new System.Windows.Forms.Button();
             this.pnlFolderDetails = new System.Windows.Forms.Panel();
             this.lblFolderFileType = new System.Windows.Forms.Label();
@@ -67,9 +66,10 @@
             this.cbxCacheEvery = new System.Windows.Forms.ComboBox();
             this.lblCacheEveryLabel = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
+            this.pbxLoading = new System.Windows.Forms.PictureBox();
             this.pnlFolderDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSearch
@@ -218,19 +218,6 @@
             this.lblSortArrow.Visible = false;
             this.lblSortArrow.Click += new System.EventHandler(this.lblSortArrow_Click);
             // 
-            // pbxLoading
-            // 
-            this.pbxLoading.BackColor = System.Drawing.Color.Transparent;
-            this.pbxLoading.Image = global::FileForensiq.UI.Properties.Resources.LoadingGif;
-            this.pbxLoading.Location = new System.Drawing.Point(228, 11);
-            this.pbxLoading.Margin = new System.Windows.Forms.Padding(4);
-            this.pbxLoading.Name = "pbxLoading";
-            this.pbxLoading.Size = new System.Drawing.Size(59, 32);
-            this.pbxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pbxLoading.TabIndex = 4;
-            this.pbxLoading.TabStop = false;
-            this.pbxLoading.Visible = false;
-            // 
             // btnErrorLog
             // 
             this.btnErrorLog.Location = new System.Drawing.Point(227, 532);
@@ -240,6 +227,7 @@
             this.btnErrorLog.TabIndex = 13;
             this.btnErrorLog.Text = "⚠ Error Log";
             this.btnErrorLog.UseVisualStyleBackColor = true;
+            this.btnErrorLog.Click += new System.EventHandler(this.btnErrorLog_Click);
             // 
             // pnlFolderDetails
             // 
@@ -538,6 +526,19 @@
             // 
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
+            // pbxLoading
+            // 
+            this.pbxLoading.BackColor = System.Drawing.Color.Transparent;
+            this.pbxLoading.Image = global::FileForensiq.UI.Properties.Resources.LoadingGif;
+            this.pbxLoading.Location = new System.Drawing.Point(228, 11);
+            this.pbxLoading.Margin = new System.Windows.Forms.Padding(4);
+            this.pbxLoading.Name = "pbxLoading";
+            this.pbxLoading.Size = new System.Drawing.Size(59, 32);
+            this.pbxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pbxLoading.TabIndex = 4;
+            this.pbxLoading.TabStop = false;
+            this.pbxLoading.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -568,10 +569,10 @@
             this.Text = "File Forensiq";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).EndInit();
             this.pnlFolderDetails.ResumeLayout(false);
             this.pnlFolderDetails.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

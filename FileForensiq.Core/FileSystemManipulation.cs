@@ -1,4 +1,5 @@
 ﻿using FileForensiq.Core.Interfaces;
+using FileForensiq.Core.Logger;
 using FileForensiq.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -53,12 +54,12 @@ namespace FileForensiq.Core
             }
             catch (UnauthorizedAccessException ex)
             {
-                Console.WriteLine("Unauthorized access to file: " + ex.Message);
+                ErrorLogger.LogError("Unauthorized access to file: " + ex.Message);
                 result.Error = ex;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception thrown: " + ex.Message);
+                ErrorLogger.LogError("Exception thrown: " + ex.Message);
                 result.Error = ex;
             }
 
@@ -166,6 +167,7 @@ namespace FileForensiq.Core
             }
             catch (Exception ex)
             {
+                ErrorLogger.LogError("Unable to open file: " + ex.Message);
                 throw ex;
             }
         }
