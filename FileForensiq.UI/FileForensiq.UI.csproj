@@ -116,6 +116,10 @@
       <Project>{03c2fa96-d1e9-49d0-b564-aeebaa14d034}</Project>
       <Name>FileForensiq.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FileForensiq.Database\FileForensiq.Database.csproj">
+      <Project>{c7be3896-cdd1-4b72-8ec8-868578703d36}</Project>
+      <Name>FileForensiq.Database</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="FileForensiqIcon.ico" />

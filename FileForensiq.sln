@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileForensiq.Core", "FileFo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileForensiq.UI", "FileForensiq.UI\FileForensiq.UI.csproj", "{858D86F5-F134-4B66-B544-A6B9036C1DFD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileForensiq.Database", "FileForensiq.Database\FileForensiq.Database.csproj", "{C7BE3896-CDD1-4B72-8EC8-868578703D36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{858D86F5-F134-4B66-B544-A6B9036C1DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{858D86F5-F134-4B66-B544-A6B9036C1DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{858D86F5-F134-4B66-B544-A6B9036C1DFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7BE3896-CDD1-4B72-8EC8-868578703D36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7BE3896-CDD1-4B72-8EC8-868578703D36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7BE3896-CDD1-4B72-8EC8-868578703D36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7BE3896-CDD1-4B72-8EC8-868578703D36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

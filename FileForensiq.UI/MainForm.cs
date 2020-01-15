@@ -1,5 +1,6 @@
 ﻿using FileForensiq.Core;
 using FileForensiq.Core.Models;
+using FileForensiq.Database;
 using FileForensiq.UI.Helpers;
 using Newtonsoft.Json;
 using System;
@@ -17,6 +18,7 @@ namespace FileForensiq.UI
     public partial class MainForm : Form
     {
         private readonly FileSystemManipulation filesManipulation;
+        private readonly DatabaseHelper database;
 
         private bool sortDescending = true;
 
@@ -51,6 +53,7 @@ namespace FileForensiq.UI
         {
             InitializeComponent();
             filesManipulation = new FileSystemManipulation();
+            database = new DatabaseHelper();
         }
 
         #region Events
@@ -195,10 +198,21 @@ namespace FileForensiq.UI
 
         private void bgwCache_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            var selectedDrive = e.Argument;
+            var selectedDrive = e.Argument as string;
 
-            // TODO: CACHE
-            e.Result = true;
+            bool tableCreated = database.CreateTable(selectedDrive.Substring(0,1).ToLower() + "_" + DateTime.Now.Day + "_" + DateTime.Now.Month + "_" + DateTime.Now.Year);
+
+            if (tableCreated)
+            {
+
+                //TODO CACHE!
+
+                e.Result = true;
+            }
+            else
+            {
+                e.Result = false;
+            }
         }
 
         private void bgwCache_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -214,10 +228,10 @@ namespace FileForensiq.UI
                     lblLastCache.Visible = true;
                     lblLastCacheLabel.Visible = true;
                     lblLastCache.Text = DateTime.Now.ToString();
-                    SetConfigSetting("LastCache-" + cbxPartitionLetters.SelectedItem?.ToString(), DateTime.Now.ToString());
+                    SetConfigSetting("LastCache-" + cbxPartitionLetters.SelectedItem?.ToString().Substring(0,1), DateTime.Now.ToString());
                 } else
                 {
-                    MessageBox.Show("Unable to cache data.", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lblLastCache.Visible = false;
                 }
             }
         }
@@ -305,7 +319,7 @@ namespace FileForensiq.UI
 
         public bool CheckIfIsCached(string selectedDrive)
         {
-            return GetConfigSetting("LastCache-" + selectedDrive) != "" && !CheckIfCacheExpired(selectedDrive);
+            return GetConfigSetting("LastCache-" + selectedDrive.Substring(0,1)) != "" && !CheckIfCacheExpired(selectedDrive.Substring(0,1));
         }
 
         public bool CheckIfCacheExpired(string selectedDrive)
