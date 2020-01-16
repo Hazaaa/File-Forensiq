@@ -38,17 +38,6 @@ namespace FileForensiq.UI
                 }
             } }
 
-        public string CacheTime { 
-            get 
-            {
-                return GetConfigSetting("CacheTime");
-            } 
-            set
-            {
-                SetConfigSetting("CacheTime",value);
-            }
-        }
-
         public MainForm()
         {
             InitializeComponent();
@@ -63,7 +52,7 @@ namespace FileForensiq.UI
             SetPartitionLettersCombobox();
             timer.Start();
             tvFileSystem.TreeViewNodeSorter = new TreeNodeSorter();
-            cbxCacheEvery.SelectedItem = CacheTime;
+            CheckServerStatus();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -191,21 +180,29 @@ namespace FileForensiq.UI
             }
         }
 
-        private void cbxCacheEvery_SelectedIndexChanged(object sender, EventArgs e)
+        private void btnCheckServerStatus_Click(object sender, EventArgs e)
         {
-            CacheTime = cbxCacheEvery.SelectedItem.ToString();
+            CheckServerStatus();
         }
 
         private void bgwCache_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             var selectedDrive = e.Argument as string;
 
-            bool tableCreated = database.CreateTable(selectedDrive.Substring(0,1).ToLower() + "_" + DateTime.Now.Day + "_" + DateTime.Now.Month + "_" + DateTime.Now.Year);
+            string tableName = selectedDrive.Substring(0, 1).ToLower() + "_" + DateTime.Now.Day + "_" + DateTime.Now.Month + "_" + DateTime.Now.Year;
+
+            bool tableCreated = database.CreateTable(tableName);
 
             if (tableCreated)
             {
+                using (var dataTable = database.GenerateDataTableForBulkInsert())
+                {
+                    // Fills dataTable with data
+                    var rootSize = filesManipulation.PrepareFileDetailsForCache(new DirectoryInfo(selectedDrive), dataTable);
 
-                //TODO CACHE!
+                    // Chache data to db
+                    database.InsertCacheData(tableName, dataTable);
+                }
 
                 e.Result = true;
             }
@@ -228,10 +225,12 @@ namespace FileForensiq.UI
                     lblLastCache.Visible = true;
                     lblLastCacheLabel.Visible = true;
                     lblLastCache.Text = DateTime.Now.ToString();
-                    SetConfigSetting("LastCache-" + cbxPartitionLetters.SelectedItem?.ToString().Substring(0,1), DateTime.Now.ToString());
+                    SetConfigSetting("LastCache-" + cbxPartitionLetters.SelectedItem?.ToString().Substring(0,1), DateTime.Now.ToString("dd/MM/yyyy"));
+                    btnSearch.Focus();
                 } else
                 {
                     lblLastCache.Visible = false;
+                    btnSearch.Focus();
                 }
             }
         }
@@ -319,13 +318,7 @@ namespace FileForensiq.UI
 
         public bool CheckIfIsCached(string selectedDrive)
         {
-            return GetConfigSetting("LastCache-" + selectedDrive.Substring(0,1)) != "" && !CheckIfCacheExpired(selectedDrive.Substring(0,1));
-        }
-
-        public bool CheckIfCacheExpired(string selectedDrive)
-        {
-            var result = DateTime.Compare(DateTime.Now, DateTime.Parse(GetConfigSetting("LastCache-" + selectedDrive)).AddMinutes(CacheTime == "" ? 10 : int.Parse(CacheTime.Substring(0, 1))));
-            return result == 1 ? true : false;
+            return GetConfigSetting("LastCache-" + selectedDrive.Substring(0,1)) != "" && DateTime.Compare(DateTime.Parse(GetConfigSetting("LastCache-" + selectedDrive.Substring(0, 1))), DateTime.Now) != 0;
         }
 
         public void SetPartitionLettersCombobox()
@@ -540,6 +533,25 @@ namespace FileForensiq.UI
                 lblFolderFileCreated.Text = fileInfo.CreationTime.ToString();
                 lblFileFolderLastAccess.Text = fileInfo.LastAccessTime.ToString();
                 lblFolderFileLastModify.Text = fileInfo.LastWriteTime.ToString();
+            }
+        }
+
+        public async void CheckServerStatus()
+        {
+            lblServerStatus.Visible = true;
+            lblServerStatus.Text = "Trying to connect...";
+
+            if (await Task.Run(() => database.CheckIfServerIsRunning()))
+            {
+                lblServerStatus.Text = "SQL Server is running...";
+                lblServerStatus.ForeColor = Color.Green;
+            }
+            else
+            {
+                lblServerStatus.Text = "SQL Server in not running.";
+                lblServerStatus.ForeColor = Color.Red;
+
+                MessageBox.Show("SQL Server is not running.\nYou can still use application but without functionality of Caching and information about files from past.\nYou can start SQL Server without restarting this application.", "Information:", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

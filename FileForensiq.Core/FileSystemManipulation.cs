@@ -3,6 +3,7 @@ using FileForensiq.Core.Logger;
 using FileForensiq.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -170,6 +171,70 @@ namespace FileForensiq.Core
                 ErrorLogger.LogError("Unable to open file: " + ex.Message);
                 throw ex;
             }
+        }
+
+        /// <summary>
+        /// Recursively populates DataTable object with info about every directory and file so those info can be cached in db.
+        /// </summary>
+        public CacheResult PrepareFileDetailsForCache(DirectoryInfo rootDirectory, DataTable data)
+        {
+            
+            if (rootDirectory == null)
+            {
+                return new CacheResult();
+            }
+
+            CacheResult result = new CacheResult();
+
+            try
+            {
+                var directories = rootDirectory.EnumerateDirectories();
+                var files = rootDirectory.EnumerateFiles();
+
+                foreach (var childDirectory in directories)
+                {
+                    var tmpRes = PrepareFileDetailsForCache(childDirectory, data);
+
+                    result.Size += tmpRes.Size;
+                    result.NumberOfFiles += tmpRes.NumberOfFiles;
+                }
+
+                foreach (var childFile in files)
+                {
+                    result.Size += childFile.Length;
+                    result.NumberOfFiles++;
+
+                    var fileRow = data.NewRow();
+
+                    fileRow["Name"] = childFile.FullName;
+                    fileRow["Type"] = childFile.Extension.Split('.')[1];
+                    fileRow["Size"] = childFile.Length;
+                    fileRow["NumberOfFiles"] = 0;
+                    fileRow["CreationTime"] = childFile.CreationTime;
+                    fileRow["LastAccessTime"] = childFile.LastAccessTime;
+                    fileRow["LastModificationTime"] = childFile.LastWriteTime;
+
+                    data.Rows.Add(fileRow);
+                }
+            }
+            catch (Exception)
+            {
+                return new CacheResult();
+            }
+
+            var directoryRow = data.NewRow();
+
+            directoryRow["Name"] = rootDirectory.FullName;
+            directoryRow["Type"] = "folder";
+            directoryRow["Size"] = result.Size;
+            directoryRow["NumberOfFiles"] = result.NumberOfFiles;
+            directoryRow["CreationTime"] = rootDirectory.CreationTime;
+            directoryRow["LastAccessTime"] = rootDirectory.LastAccessTime;
+            directoryRow["LastModificationTime"] = rootDirectory.LastWriteTime;
+
+            data.Rows.Add(directoryRow);
+
+            return result;
         }
     }
 }

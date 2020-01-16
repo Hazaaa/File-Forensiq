@@ -50,6 +50,7 @@
     <Compile Include="FileSystemManipulation.cs" />
     <Compile Include="Interfaces\IFileSystemManipulation.cs" />
     <Compile Include="Logger\ErrorLogger.cs" />
+    <Compile Include="Models\CacheResult.cs" />
     <Compile Include="Models\ChildNodesResult.cs" />
     <Compile Include="Models\DirectoryTreeNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
