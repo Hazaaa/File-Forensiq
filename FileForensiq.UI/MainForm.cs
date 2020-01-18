@@ -23,6 +23,7 @@ namespace FileForensiq.UI
         private bool sortDescending = true;
 
         private ErrorForm ef;
+        private FilterForm ff;
 
         public ErrorForm ErrorForm {
             get
@@ -36,7 +37,24 @@ namespace FileForensiq.UI
                 {
                     return ef;
                 }
-            } }
+            } 
+        }
+
+        public FilterForm FilterForm
+        {
+            get
+            {
+                if (ff == null || ff.IsDisposed)
+                {
+                    ff = new FilterForm(cbxPartitionLetters.SelectedItem.ToString().Substring(0,1).ToLower());
+                    return ff;
+                }
+                else
+                {
+                    return ff;
+                }
+            }
+        }
 
         public MainForm()
         {
@@ -70,6 +88,11 @@ namespace FileForensiq.UI
         private void btnErrorLog_Click(object sender, EventArgs e)
         {
             ErrorForm.Show();
+        }
+
+        private void btnStatistics_Click(object sender, EventArgs e)
+        {
+            FilterForm.Show();
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -318,7 +341,7 @@ namespace FileForensiq.UI
 
         public bool CheckIfIsCached(string selectedDrive)
         {
-            return GetConfigSetting("LastCache-" + selectedDrive.Substring(0,1)) != "" && DateTime.Compare(DateTime.Parse(GetConfigSetting("LastCache-" + selectedDrive.Substring(0, 1))), DateTime.Now) != 0;
+            return GetConfigSetting("LastCache-" + selectedDrive.Substring(0,1)) != "" && GetConfigSetting("LastCache-" + selectedDrive.Substring(0, 1)) == DateTime.Now.ToString("dd/MM/yyyy");
         }
 
         public void SetPartitionLettersCombobox()
@@ -556,5 +579,7 @@ namespace FileForensiq.UI
         }
 
         #endregion
+
+        
     }
 }

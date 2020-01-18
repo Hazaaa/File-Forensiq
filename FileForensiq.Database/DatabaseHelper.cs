@@ -1,4 +1,6 @@
-﻿using FileForensiq.Core.Logger;
+﻿using Dapper;
+using FileForensiq.Core.Logger;
+using FileForensiq.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -57,7 +59,7 @@ namespace FileForensiq.Database
 
                     string query = "CREATE TABLE " + tableName +
                         " (Id int IDENTITY(1,1) PRIMARY KEY, Name text, " +
-                        "Type varchar(255), " +
+                        "Extension varchar(255), " +
                         "Size bigint, " +
                         "NumberOfFiles int, " +
                         "CreationTime datetime, " +
@@ -77,7 +79,7 @@ namespace FileForensiq.Database
                     ErrorLogger.LogError("Error while creating database table: " + ex.Message);
                     sqlTransaction.Rollback();
 
-                    if(ex.Message.Contains("There is already an object named"))
+                    if (ex.Message.Contains("There is already an object named"))
                     {
                         return false;
                     }
@@ -90,7 +92,7 @@ namespace FileForensiq.Database
                         connection.Close();
                 }
             }
-        } 
+        }
 
         /// <summary>
         /// Bulk insertion of cache data.
@@ -111,7 +113,7 @@ namespace FileForensiq.Database
 
                     // Mapping columns from DataTable to table in db
                     sqlBulkCopy.ColumnMappings.Add("Name", "Name");
-                    sqlBulkCopy.ColumnMappings.Add("Type", "Type");
+                    sqlBulkCopy.ColumnMappings.Add("Extension", "Extension");
                     sqlBulkCopy.ColumnMappings.Add("Size", "Size");
                     sqlBulkCopy.ColumnMappings.Add("NumberOfFiles", "NumberOfFiles");
                     sqlBulkCopy.ColumnMappings.Add("CreationTime", "CreationTime");
@@ -145,7 +147,7 @@ namespace FileForensiq.Database
             DataTable tbl = new DataTable();
 
             tbl.Columns.Add("Name", typeof(string));
-            tbl.Columns.Add("Type", typeof(string));
+            tbl.Columns.Add("Extension", typeof(string));
             tbl.Columns.Add("Size", typeof(long));
             tbl.Columns.Add("NumberOfFiles", typeof(int));
             tbl.Columns.Add("CreationTime", typeof(DateTime));
@@ -153,6 +155,91 @@ namespace FileForensiq.Database
             tbl.Columns.Add("LastModificationTime", typeof(DateTime));
 
             return tbl;
+        }
+
+        /// <summary>
+        /// Returns all tables names that has letter in their name.
+        /// </summary>
+        /// <param name="letter">Letter is for first letter of table.</param>
+        /// <param name="connection">Already oppened connection.</param>
+        public List<string> GetTablesNames(string letter, IDbConnection connection)
+        {
+            string query = "SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%" + letter + "%'";
+
+            return connection.Query<string>(query).ToList();
+        }
+
+        /// <summary>
+        /// Returns all file types stored in extension column in all tables.
+        /// </summary>
+        public List<string> GetFileTypes(string tableLetter)
+        {
+            using (IDbConnection connection = new SqlConnection(DatabaseConfig.ConnectionString("FileForensiqDB")))
+            {
+                try
+                {
+                    connection.Open();
+
+                    List<string> tableNames = GetTablesNames(tableLetter, connection);
+
+                    string query = "SELECT DISTINCT " + tableNames[0] + ".Extension FROM " + tableNames[0];
+
+                    foreach (var table in tableNames.Skip(1).ToList())
+                    {
+                        query += " LEFT JOIN " + table + " ON " + tableNames[0] + ".Extension = " + table + ".Extension";
+                    }
+
+                    query += " ORDER BY " + tableNames[0] + ".Extension";
+
+                    return connection.Query<string>(query).ToList();
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogger.LogError("Error while retriving file types: " + ex.Message);
+                    return null;
+                }
+                finally
+                {
+                    // Always close connection
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+        }
+
+        public List<CacheModel> GetAllFiles(string tableLetter, List<string> types)
+        {
+            using (IDbConnection connection = new SqlConnection(DatabaseConfig.ConnectionString("FileForensiqDB")))
+            {
+                try
+                {
+                    connection.Open();
+
+                    List<CacheModel> result = new List<CacheModel>();
+
+                    List<string> tableNames = GetTablesNames(tableLetter, connection);
+
+                    foreach (var table in tableNames)
+                    {
+                        string query = "SELECT * FROM " + table + " WHERE Extension IN @types;";
+
+                        result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogger.LogError("Error while retriving files: " + ex.Message);
+                    return null;
+                }
+                finally
+                {
+                    // Always close connection
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
         }
     }
 }

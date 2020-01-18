@@ -207,7 +207,7 @@ namespace FileForensiq.Core
                     var fileRow = data.NewRow();
 
                     fileRow["Name"] = childFile.FullName;
-                    fileRow["Type"] = childFile.Extension.Split('.')[1];
+                    fileRow["Extension"] = childFile.Extension.Split('.')[1];
                     fileRow["Size"] = childFile.Length;
                     fileRow["NumberOfFiles"] = 0;
                     fileRow["CreationTime"] = childFile.CreationTime;
@@ -225,7 +225,7 @@ namespace FileForensiq.Core
             var directoryRow = data.NewRow();
 
             directoryRow["Name"] = rootDirectory.FullName;
-            directoryRow["Type"] = "folder";
+            directoryRow["Extension"] = "folder";
             directoryRow["Size"] = result.Size;
             directoryRow["NumberOfFiles"] = result.NumberOfFiles;
             directoryRow["CreationTime"] = rootDirectory.CreationTime;

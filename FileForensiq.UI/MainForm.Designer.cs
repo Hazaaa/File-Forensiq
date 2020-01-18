@@ -67,6 +67,8 @@
             this.pbxLoading = new System.Windows.Forms.PictureBox();
             this.lblServerStatus = new System.Windows.Forms.Label();
             this.btnCheckServerStatus = new System.Windows.Forms.Button();
+            this.btnGraphicDisplay = new System.Windows.Forms.Button();
+            this.btnStatistics = new System.Windows.Forms.Button();
             this.pnlFolderDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
@@ -500,13 +502,32 @@
             // 
             // btnCheckServerStatus
             // 
-            this.btnCheckServerStatus.Location = new System.Drawing.Point(630, 434);
+            this.btnCheckServerStatus.Location = new System.Drawing.Point(593, 434);
             this.btnCheckServerStatus.Name = "btnCheckServerStatus";
-            this.btnCheckServerStatus.Size = new System.Drawing.Size(61, 23);
+            this.btnCheckServerStatus.Size = new System.Drawing.Size(104, 23);
             this.btnCheckServerStatus.TabIndex = 19;
-            this.btnCheckServerStatus.Text = "⚠ Check Server Status";
+            this.btnCheckServerStatus.Text = "☁ Check Server Status";
             this.btnCheckServerStatus.UseVisualStyleBackColor = true;
             this.btnCheckServerStatus.Click += new System.EventHandler(this.btnCheckServerStatus_Click);
+            // 
+            // btnGraphicDisplay
+            // 
+            this.btnGraphicDisplay.Location = new System.Drawing.Point(327, 65);
+            this.btnGraphicDisplay.Name = "btnGraphicDisplay";
+            this.btnGraphicDisplay.Size = new System.Drawing.Size(104, 23);
+            this.btnGraphicDisplay.TabIndex = 20;
+            this.btnGraphicDisplay.Text = "🖻 Graphic Display";
+            this.btnGraphicDisplay.UseVisualStyleBackColor = true;
+            // 
+            // btnStatistics
+            // 
+            this.btnStatistics.Location = new System.Drawing.Point(253, 65);
+            this.btnStatistics.Name = "btnStatistics";
+            this.btnStatistics.Size = new System.Drawing.Size(70, 23);
+            this.btnStatistics.TabIndex = 21;
+            this.btnStatistics.Text = "🔍 Filter";
+            this.btnStatistics.UseVisualStyleBackColor = true;
+            this.btnStatistics.Click += new System.EventHandler(this.btnStatistics_Click);
             // 
             // MainForm
             // 
@@ -514,6 +535,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(847, 463);
+            this.Controls.Add(this.btnStatistics);
+            this.Controls.Add(this.btnGraphicDisplay);
             this.Controls.Add(this.btnCheckServerStatus);
             this.Controls.Add(this.lblServerStatus);
             this.Controls.Add(this.lblLastCache);
@@ -585,6 +608,8 @@
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label lblServerStatus;
         private System.Windows.Forms.Button btnCheckServerStatus;
+        private System.Windows.Forms.Button btnGraphicDisplay;
+        private System.Windows.Forms.Button btnStatistics;
     }
 }
 

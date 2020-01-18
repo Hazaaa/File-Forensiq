@@ -13,14 +13,14 @@ namespace FileForensiq.Database.Models
 
         public string Name { get; set; }
 
-        public string Type { get; set; }
+        public string Extension { get; set; }
 
         public long Size { get; set; }
 
         /// <summary>
-        /// Number of files for directory, but for files this property is 0 or null.
+        /// Number of files for directory, but for files this property is 0.
         /// </summary>
-        public int? NumberOfFiles { get; set; }
+        public int NumberOfFiles { get; set; }
 
         public DateTime CreationTime { get; set; }
 

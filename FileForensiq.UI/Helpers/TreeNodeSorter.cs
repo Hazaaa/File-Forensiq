@@ -73,7 +73,7 @@ namespace FileForensiq.UI.Helpers
 
             if (Descending && result != 0)
             {
-                result = result * -1;
+                result *= -1;
             }
 
             return result;
