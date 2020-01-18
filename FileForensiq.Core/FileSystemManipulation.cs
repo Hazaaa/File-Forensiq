@@ -206,7 +206,7 @@ namespace FileForensiq.Core
 
                     var fileRow = data.NewRow();
 
-                    fileRow["Name"] = childFile.FullName;
+                    fileRow["Name"] = childFile.FullName.Replace('\\', '/');
                     fileRow["Extension"] = childFile.Extension.Split('.')[1];
                     fileRow["Size"] = childFile.Length;
                     fileRow["NumberOfFiles"] = 0;
@@ -224,7 +224,7 @@ namespace FileForensiq.Core
 
             var directoryRow = data.NewRow();
 
-            directoryRow["Name"] = rootDirectory.FullName;
+            directoryRow["Name"] = rootDirectory.FullName.Replace('\\', '/');
             directoryRow["Extension"] = "folder";
             directoryRow["Size"] = result.Size;
             directoryRow["NumberOfFiles"] = result.NumberOfFiles;

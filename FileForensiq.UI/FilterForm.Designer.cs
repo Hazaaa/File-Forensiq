@@ -47,6 +47,7 @@
             this.lblNumOfFiles = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
             this.lblErrorLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.gbxTimePeriod.SuspendLayout();
             this.gbxFileType.SuspendLayout();
             this.gbxFilterOptions.SuspendLayout();
@@ -204,6 +205,7 @@
             // 
             // gbxFiles
             // 
+            this.gbxFiles.Controls.Add(this.label1);
             this.gbxFiles.Controls.Add(this.lblNumberOfFiles);
             this.gbxFiles.Controls.Add(this.lblNumOfFiles);
             this.gbxFiles.Controls.Add(this.dgvFiles);
@@ -253,6 +255,15 @@
             this.lblErrorLabel.TabIndex = 19;
             this.lblErrorLabel.Text = "                 Error occurred! \r\nCheck Error Log for more information.";
             this.lblErrorLabel.Visible = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(344, 315);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(224, 13);
+            this.label1.TabIndex = 19;
+            this.label1.Text = "*Double Click on any row to open file statistics";
             // 
             // FilterForm
             // 
@@ -305,5 +316,6 @@
         private System.Windows.Forms.Label lblNumberOfFiles;
         private System.Windows.Forms.Label lblNumOfFiles;
         private System.Windows.Forms.Label lblErrorLabel;
+        private System.Windows.Forms.Label label1;
     }
 }

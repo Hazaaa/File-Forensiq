@@ -58,7 +58,7 @@ namespace FileForensiq.Database
                     sqlTransaction = connection.BeginTransaction();
 
                     string query = "CREATE TABLE " + tableName +
-                        " (Id int IDENTITY(1,1) PRIMARY KEY, Name text, " +
+                        " (Id int IDENTITY(1,1) PRIMARY KEY, Name varchar(max), " +
                         "Extension varchar(255), " +
                         "Size bigint, " +
                         "NumberOfFiles int, " +
@@ -274,6 +274,51 @@ namespace FileForensiq.Database
                             query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}' AND Extension IN {4}", table, columnName, from.ToString("yyyy/MM/dd"), to?.AddHours(24).ToString("yyyy/MM/dd"), "@types");
                             result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
                         }  
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogger.LogError("Error while retriving files: " + ex.Message);
+                    throw;
+                }
+                finally
+                {
+                    // Always close connection
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns file information from all tables for specific column.
+        /// </summary>
+        public List<CacheModel> GetFileColumnHistory(string tableLetter, string fileName)
+        {
+            using (IDbConnection connection = new SqlConnection(DatabaseConfig.ConnectionString("FileForensiqDB")))
+            {
+                try
+                {
+                    connection.Open();
+
+                    List<CacheModel> result = new List<CacheModel>();
+
+                    List<string> tableNames = GetAllTableNames(tableLetter, connection);
+
+                    foreach (var table in tableNames)
+                    {
+                        string query = "SELECT * FROM " + table + " WHERE Name = @fileName;";
+
+                        var tempResult = connection.Query<CacheModel>(query, new { fileName }).ToList();
+
+                        foreach (var item in tempResult)
+                        {
+                            item.DateCached = table;
+                        }
+
+                        result.AddRange(tempResult);
                     }
 
                     return result;

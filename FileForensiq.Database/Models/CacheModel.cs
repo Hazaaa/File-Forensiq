@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,9 @@ namespace FileForensiq.Database.Models
         public DateTime LastAccessTime { get; set; }
 
         public DateTime LastModificationTime { get; set; }
+
+        [Browsable(false)]
+        public string DateCached { get; set; }
     }
     public class CacheModelComaparer : IEqualityComparer<CacheModel>
     {

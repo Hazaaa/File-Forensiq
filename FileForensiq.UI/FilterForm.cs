@@ -32,12 +32,30 @@ namespace FileForensiq.UI
             For30Days
         }
 
+        private GraphicForm gf;
+
+        public GraphicForm GraphicForm
+        {
+            get
+            {
+                if (gf == null || gf.IsDisposed)
+                {
+                    gf = new GraphicForm(selectedDrive, (CacheModel)dgvFiles.SelectedRows[0].DataBoundItem);
+                    return gf;
+                }
+                else
+                {
+                    return gf;
+                }
+            }
+        }
+
         public FilterForm()
         {
             InitializeComponent();
         }
 
-        public FilterForm(string drive) : base()
+        public FilterForm(string drive)
         {
             InitializeComponent();
             selectedDrive = drive;
@@ -86,7 +104,7 @@ namespace FileForensiq.UI
 
         private void dgvFiles_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            var selectedRow = (CacheModel)dgvFiles.SelectedRows[0].DataBoundItem;
+            GraphicForm.Show();
         }
 
         #endregion
