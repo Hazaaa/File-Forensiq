@@ -51,6 +51,7 @@ namespace FileForensiq.UI
         {
             PopulateFileTypeCombobox();
             SetUpDateTimePickers();
+            gbxTimePeriod.Enabled = false;
         }
 
         private void cbxFilterOptions_SelectedIndexChanged(object sender, EventArgs e)
@@ -66,6 +67,7 @@ namespace FileForensiq.UI
         private void btnSearch_Click(object sender, EventArgs e)
         {
             lblNumberOfFiles.Visible = false;
+            lblErrorLabel.Visible = false;
             PopulateDataGridView();
         }
 
@@ -82,6 +84,11 @@ namespace FileForensiq.UI
             _previousIndex = e.ColumnIndex;
         }
 
+        private void dgvFiles_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var selectedRow = (CacheModel)dgvFiles.SelectedRows[0].DataBoundItem;
+        }
+
         #endregion
 
         #region Helpers
@@ -94,39 +101,27 @@ namespace FileForensiq.UI
             FilterOptions selectedOption = (FilterOptions) cbxFilterOptions.SelectedIndex;
             FilterPeriod selectedPeriod = (FilterPeriod) cbxFilterPeriod.SelectedIndex;
 
-            DateTime selectedDateFrom = dtpPeriodFrom.Value;
-            DateTime selectedDateTo = dtpPeriodTo.Value;
+            DateTime selectedDateFrom = dtpPeriodFrom.Value.Date;
+            DateTime selectedDateTo = dtpPeriodTo.Value.Date;
 
             List<string> selectedTypes = clbFileTypes.CheckedItems.Cast<string>().ToList();
 
             switch (selectedOption)
             {
                 case FilterOptions.ShowAll:
-                    dgvFiles.DataSource = database.GetAllFiles(selectedDrive, selectedTypes);
-                    SetUpDataGridViewColumnsSettings();
-                    lblNumberOfFiles.Visible = true;
-                    lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+                    ShowAllFiles(selectedTypes);
                     break;
 
                 case FilterOptions.TimeCreated:
-                    // TODO
-                    SetUpDataGridViewColumnsSettings();
-                    lblNumberOfFiles.Visible = true;
-                    lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+                    ShowFilesByPeriodOfTime("CreationTime", selectedPeriod, selectedDateFrom, selectedDateTo, selectedTypes);
                     break;
 
                 case FilterOptions.LastModifyTime:
-                    // TODO
-                    SetUpDataGridViewColumnsSettings();
-                    lblNumberOfFiles.Visible = true;
-                    lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+                    ShowFilesByPeriodOfTime("LastModificationTime", selectedPeriod, selectedDateFrom, selectedDateTo, selectedTypes);
                     break;
 
                 case FilterOptions.LastAccessTime:
-                    // TODO
-                    SetUpDataGridViewColumnsSettings();
-                    lblNumberOfFiles.Visible = true;
-                    lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+                    ShowFilesByPeriodOfTime("LastAccessTime", selectedPeriod, selectedDateFrom, selectedDateTo, selectedTypes);
                     break;
 
                 default:
@@ -134,6 +129,45 @@ namespace FileForensiq.UI
             }
         }
 
+        public void ShowAllFiles(List<string> selectedTypes)
+        {
+            try
+            {
+                dgvFiles.DataSource = database.GetAllFiles(selectedDrive, selectedTypes).Distinct(new CacheModelComaparer()).ToList();
+                SetUpDataGridViewColumnsSettings();
+                lblNumberOfFiles.Visible = true;
+                lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+            }
+            catch (Exception)
+            {
+                lblErrorLabel.Visible = true;
+            }
+        }
+
+        public void ShowFilesByPeriodOfTime(string columnName, FilterPeriod selectedPeriod, DateTime selectedDateFrom, DateTime selectedDateTo, List<string> selectedTypes)
+        {
+            try
+            {
+                switch (selectedPeriod)
+                {
+                    case FilterPeriod.ForDay:
+                        dgvFiles.DataSource = database.GetFilesByPeriodOfTime(selectedDrive, columnName, selectedTypes, selectedDateFrom).Distinct(new CacheModelComaparer()).ToList();
+                        break;
+                    default:
+                        dgvFiles.DataSource = database.GetFilesByPeriodOfTime(selectedDrive, columnName, selectedTypes, selectedDateFrom, selectedDateTo).Distinct(new CacheModelComaparer()).ToList();
+                        break;
+                }
+
+                SetUpDataGridViewColumnsSettings();
+                lblNumberOfFiles.Visible = true;
+                lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+            }
+            catch (Exception)
+            {
+                lblErrorLabel.Visible = true;
+            }
+        }
+        
         public void SetUpDataGridViewColumnsSettings()
         {
             foreach (var column in dgvFiles.Columns.Cast<DataGridViewColumn>().ToList())
@@ -152,20 +186,29 @@ namespace FileForensiq.UI
 
         public void PopulateFileTypeCombobox()
         {
-            List<string> types = database.GetFileTypes(selectedDrive.Substring(0, 1).ToLower());
-
-            if(types != null)
+            try
             {
-                clbFileTypes.Items.AddRange(types.ToArray());
+                List<string> types = database.GetFileTypes(selectedDrive.Substring(0, 1).ToLower());
+
+                if (types != null)
+                {
+                    clbFileTypes.Items.AddRange(types.ToArray());
+                }
+            }
+            catch (Exception)
+            {
+                lblErrorLabel.Visible = true;
             }
         }
 
         public void SetUpDateTimePickers()
         {
-            dtpPeriodFrom.MinDate = DateTime.Now.AddDays(-30);
+            dtpPeriodFrom.MinDate = DateTime.Now.AddYears(-10);
             dtpPeriodFrom.MaxDate = DateTime.Now;
-            dtpPeriodTo.MinDate = DateTime.Now.AddDays(-30);
+            dtpPeriodFrom.Value = DateTime.Now;
+            dtpPeriodTo.MinDate = DateTime.Now.AddYears(-10);
             dtpPeriodTo.MaxDate = DateTime.Now;
+            dtpPeriodTo.Value = DateTime.Now;
         }
 
         public void SetComboboxesForFilterOptions()
@@ -190,12 +233,12 @@ namespace FileForensiq.UI
                     dtpPeriodFrom.Enabled = true;
                     break;
 
-                case 2: // Fpr 30 days
+                case 2: // For 30 days
                     gbxTimePeriod.Enabled = true;
                     dtpPeriodTo.Enabled = false;
                     dtpPeriodTo.Value = dtpPeriodTo.MaxDate;
                     dtpPeriodFrom.Enabled = false;
-                    dtpPeriodFrom.Value = dtpPeriodFrom.MinDate;
+                    dtpPeriodFrom.Value = dtpPeriodTo.MaxDate.AddDays(-30);
                     break;
 
                 default:

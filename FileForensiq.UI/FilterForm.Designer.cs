@@ -46,6 +46,7 @@
             this.lblNumberOfFiles = new System.Windows.Forms.Label();
             this.lblNumOfFiles = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
+            this.lblErrorLabel = new System.Windows.Forms.Label();
             this.gbxTimePeriod.SuspendLayout();
             this.gbxFileType.SuspendLayout();
             this.gbxFilterOptions.SuspendLayout();
@@ -198,6 +199,7 @@
             this.dgvFiles.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvFiles.Size = new System.Drawing.Size(555, 288);
             this.dgvFiles.TabIndex = 16;
+            this.dgvFiles.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvFiles_CellContentDoubleClick);
             this.dgvFiles.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvFiles_ColumnHeaderMouseClick);
             // 
             // gbxFiles
@@ -241,16 +243,29 @@
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
+            // lblErrorLabel
+            // 
+            this.lblErrorLabel.AutoSize = true;
+            this.lblErrorLabel.ForeColor = System.Drawing.Color.Red;
+            this.lblErrorLabel.Location = new System.Drawing.Point(602, 228);
+            this.lblErrorLabel.Name = "lblErrorLabel";
+            this.lblErrorLabel.Size = new System.Drawing.Size(182, 26);
+            this.lblErrorLabel.TabIndex = 19;
+            this.lblErrorLabel.Text = "                 Error occurred! \r\nCheck Error Log for more information.";
+            this.lblErrorLabel.Visible = false;
+            // 
             // FilterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 449);
+            this.Controls.Add(this.lblErrorLabel);
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.gbxFiles);
             this.Controls.Add(this.gbxFilterOptions);
             this.Controls.Add(this.gbxFileType);
             this.Controls.Add(this.gbxTimePeriod);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FilterForm";
             this.ShowInTaskbar = false;
@@ -266,6 +281,7 @@
             this.gbxFiles.ResumeLayout(false);
             this.gbxFiles.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -288,5 +304,6 @@
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Label lblNumberOfFiles;
         private System.Windows.Forms.Label lblNumOfFiles;
+        private System.Windows.Forms.Label lblErrorLabel;
     }
 }

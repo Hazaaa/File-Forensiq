@@ -162,7 +162,7 @@ namespace FileForensiq.Database
         /// </summary>
         /// <param name="letter">Letter is for first letter of table.</param>
         /// <param name="connection">Already oppened connection.</param>
-        public List<string> GetTablesNames(string letter, IDbConnection connection)
+        public List<string> GetAllTableNames(string letter, IDbConnection connection)
         {
             string query = "SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%" + letter + "%'";
 
@@ -180,7 +180,7 @@ namespace FileForensiq.Database
                 {
                     connection.Open();
 
-                    List<string> tableNames = GetTablesNames(tableLetter, connection);
+                    List<string> tableNames = GetAllTableNames(tableLetter, connection);
 
                     string query = "SELECT DISTINCT " + tableNames[0] + ".Extension FROM " + tableNames[0];
 
@@ -196,7 +196,7 @@ namespace FileForensiq.Database
                 catch (Exception ex)
                 {
                     ErrorLogger.LogError("Error while retriving file types: " + ex.Message);
-                    return null;
+                    throw;
                 }
                 finally
                 {
@@ -207,6 +207,9 @@ namespace FileForensiq.Database
             }
         }
 
+        /// <summary>
+        /// Returns all informations about files for specific types.
+        /// </summary>
         public List<CacheModel> GetAllFiles(string tableLetter, List<string> types)
         {
             using (IDbConnection connection = new SqlConnection(DatabaseConfig.ConnectionString("FileForensiqDB")))
@@ -217,7 +220,7 @@ namespace FileForensiq.Database
 
                     List<CacheModel> result = new List<CacheModel>();
 
-                    List<string> tableNames = GetTablesNames(tableLetter, connection);
+                    List<string> tableNames = GetAllTableNames(tableLetter, connection);
 
                     foreach (var table in tableNames)
                     {
@@ -231,7 +234,54 @@ namespace FileForensiq.Database
                 catch (Exception ex)
                 {
                     ErrorLogger.LogError("Error while retriving files: " + ex.Message);
-                    return null;
+                    throw;
+                }
+                finally
+                {
+                    // Always close connection
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns all files created between specific date.
+        /// </summary>
+        public List<CacheModel> GetFilesByPeriodOfTime(string tableLetter, string columnName, List<string> types, DateTime from, DateTime? to = null)
+        {
+            using (IDbConnection connection = new SqlConnection(DatabaseConfig.ConnectionString("FileForensiqDB")))
+            {
+                try
+                {
+                    connection.Open();
+
+                    List<CacheModel> result = new List<CacheModel>();
+                    List<string> tableNames = new List<string>();
+
+                    tableNames.AddRange(GetAllTableNames(tableLetter, connection));
+
+                    foreach (var table in tableNames)
+                    {
+                        string query = "";
+                        if(to == null)
+                        {
+                            query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}' AND Extension IN {4}", table, columnName, from.ToString("yyyy/MM/dd"), from.AddHours(24).ToString("yyyy/MM/dd"), "@types");
+                            result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                        }
+                        else
+                        {
+                            query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}' AND Extension IN {4}", table, columnName, from.ToString("yyyy/MM/dd"), to?.AddHours(24).ToString("yyyy/MM/dd"), "@types");
+                            result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                        }  
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogger.LogError("Error while retriving files: " + ex.Message);
+                    throw;
                 }
                 finally
                 {

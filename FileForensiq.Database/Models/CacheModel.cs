@@ -28,4 +28,17 @@ namespace FileForensiq.Database.Models
 
         public DateTime LastModificationTime { get; set; }
     }
+    public class CacheModelComaparer : IEqualityComparer<CacheModel>
+    {
+        public bool Equals(CacheModel x, CacheModel y)
+        {
+            // Two items are equal if their ids are equal.
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(CacheModel obj)
+        {
+            return obj.Id.GetHashCode();
+        }
+    }
 }
