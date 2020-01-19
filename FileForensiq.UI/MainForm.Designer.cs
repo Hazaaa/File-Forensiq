@@ -67,8 +67,10 @@
             this.pbxLoading = new System.Windows.Forms.PictureBox();
             this.lblServerStatus = new System.Windows.Forms.Label();
             this.btnCheckServerStatus = new System.Windows.Forms.Button();
-            this.btnGraphicDisplay = new System.Windows.Forms.Button();
             this.btnStatistics = new System.Windows.Forms.Button();
+            this.btnShowDeletedFiles = new System.Windows.Forms.Button();
+            this.btnShowStatistics = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.pnlFolderDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxLoading)).BeginInit();
@@ -225,6 +227,8 @@
             // pnlFolderDetails
             // 
             this.pnlFolderDetails.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.pnlFolderDetails.Controls.Add(this.btnShowStatistics);
+            this.pnlFolderDetails.Controls.Add(this.btnShowDeletedFiles);
             this.pnlFolderDetails.Controls.Add(this.lblFolderFileType);
             this.pnlFolderDetails.Controls.Add(this.lblTypeLabel);
             this.pnlFolderDetails.Controls.Add(this.lblFolderFileLastModify);
@@ -510,24 +514,38 @@
             this.btnCheckServerStatus.UseVisualStyleBackColor = true;
             this.btnCheckServerStatus.Click += new System.EventHandler(this.btnCheckServerStatus_Click);
             // 
-            // btnGraphicDisplay
-            // 
-            this.btnGraphicDisplay.Location = new System.Drawing.Point(327, 65);
-            this.btnGraphicDisplay.Name = "btnGraphicDisplay";
-            this.btnGraphicDisplay.Size = new System.Drawing.Size(104, 23);
-            this.btnGraphicDisplay.TabIndex = 20;
-            this.btnGraphicDisplay.Text = "🖻 Graphic Display";
-            this.btnGraphicDisplay.UseVisualStyleBackColor = true;
-            // 
             // btnStatistics
             // 
-            this.btnStatistics.Location = new System.Drawing.Point(253, 65);
+            this.btnStatistics.Location = new System.Drawing.Point(361, 65);
             this.btnStatistics.Name = "btnStatistics";
             this.btnStatistics.Size = new System.Drawing.Size(70, 23);
             this.btnStatistics.TabIndex = 21;
             this.btnStatistics.Text = "🔍 Filter";
             this.btnStatistics.UseVisualStyleBackColor = true;
             this.btnStatistics.Click += new System.EventHandler(this.btnStatistics_Click);
+            // 
+            // btnShowDeletedFiles
+            // 
+            this.btnShowDeletedFiles.Location = new System.Drawing.Point(42, 88);
+            this.btnShowDeletedFiles.Name = "btnShowDeletedFiles";
+            this.btnShowDeletedFiles.Size = new System.Drawing.Size(27, 23);
+            this.btnShowDeletedFiles.TabIndex = 22;
+            this.btnShowDeletedFiles.Text = "✘";
+            this.toolTip.SetToolTip(this.btnShowDeletedFiles, "Show Deleted Files");
+            this.btnShowDeletedFiles.UseVisualStyleBackColor = true;
+            this.btnShowDeletedFiles.Visible = false;
+            // 
+            // btnShowStatistics
+            // 
+            this.btnShowStatistics.Location = new System.Drawing.Point(9, 88);
+            this.btnShowStatistics.Name = "btnShowStatistics";
+            this.btnShowStatistics.Size = new System.Drawing.Size(27, 23);
+            this.btnShowStatistics.TabIndex = 23;
+            this.btnShowStatistics.Text = "🖻 ";
+            this.toolTip.SetToolTip(this.btnShowStatistics, "Graphic Display Information\r\n");
+            this.btnShowStatistics.UseVisualStyleBackColor = true;
+            this.btnShowStatistics.Visible = false;
+            this.btnShowStatistics.Click += new System.EventHandler(this.btnShowStatistics_Click);
             // 
             // MainForm
             // 
@@ -536,7 +554,6 @@
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(847, 463);
             this.Controls.Add(this.btnStatistics);
-            this.Controls.Add(this.btnGraphicDisplay);
             this.Controls.Add(this.btnCheckServerStatus);
             this.Controls.Add(this.lblServerStatus);
             this.Controls.Add(this.lblLastCache);
@@ -608,8 +625,10 @@
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label lblServerStatus;
         private System.Windows.Forms.Button btnCheckServerStatus;
-        private System.Windows.Forms.Button btnGraphicDisplay;
         private System.Windows.Forms.Button btnStatistics;
+        private System.Windows.Forms.Button btnShowDeletedFiles;
+        private System.Windows.Forms.Button btnShowStatistics;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
 

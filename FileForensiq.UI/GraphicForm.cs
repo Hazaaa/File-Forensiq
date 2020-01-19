@@ -44,8 +44,9 @@ namespace FileForensiq.UI
 
         private void GraphicForm_Load(object sender, EventArgs e)
         {
-            ShowDirectoryFileDetails();
             perviousFileData = database.GetFileColumnHistory(selectedDrive, selectedFile.Name);
+            selectedFile = perviousFileData.Count == 0 ? selectedFile : perviousFileData.Last();
+            ShowDirectoryFileDetails();
             cbxGraphicOptions.SelectedIndex = 0;
         }
 
@@ -58,21 +59,66 @@ namespace FileForensiq.UI
                     case GraphicOptions.Size:
                         ClearChart();
                         chart.Titles.Add("Size over 30 days of period (In MB):");
-                        var series = chart.Series.Add("Size");
-                        series.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                        var seriesSize = chart.Series.Add("Size");
+                        seriesSize.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                        seriesSize.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+                        seriesSize.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+                        seriesSize.MarkerSize = 10;
                         foreach (CacheModel data in perviousFileData)
                         {
-                            series.Points.AddXY(data.DateCached.Split('_').ToList().Skip(1).ToList().Aggregate((x,y) => x + "-" + y), (data.Size / 1024f) / 1024f);
+                            seriesSize.Points.AddXY(data.DateCached.Split('_').ToList().Skip(1).ToList().Aggregate((x,y) => x + "-" + y), (data.Size / 1024f) / 1024f);
+                        }
+                        foreach (var point in seriesSize.Points)
+                        {
+                            point.ToolTip = "#VAL";
                         }
                         break;
 
                     case GraphicOptions.NumberOfFiles:
+                        ClearChart();
+                        chart.Titles.Add("Number of files for 30 days period:");
+                        var seriesFiles = chart.Series.Add("Number Of Files");
+                        seriesFiles.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+                        seriesFiles.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+                        seriesFiles.MarkerSize = 10;
+                        foreach (CacheModel data in perviousFileData)
+                        {
+                            seriesFiles.Points.AddXY(data.DateCached.Split('_').ToList().Skip(1).ToList().Aggregate((x, y) => x + "-" + y), data.NumberOfFiles);
+                        }
+                        foreach (var point in seriesFiles.Points)
+                        {
+                            point.ToolTip = "#VAL";
+                        }
                         break;
 
                     case GraphicOptions.TimeAccess:
+                        ClearChart();
+                        chart.Titles.Add("Accessing file for 30 days period:");
+                        var seriesAccessTime = chart.Series.Add("Time Accessed");
+                        seriesAccessTime.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bubble;
+                        foreach (CacheModel data in perviousFileData)
+                        {
+                            seriesAccessTime.Points.AddXY(data.DateCached.Split('_').ToList().Skip(1).ToList().Aggregate((x, y) => x + "-" + y), data.LastAccessTime);
+                        }
+                        foreach (var point in seriesAccessTime.Points)
+                        {
+                            point.ToolTip = "#VAL";
+                        }
                         break;
 
                     case GraphicOptions.TimeModify:
+                        ClearChart();
+                        chart.Titles.Add("Modification of file for 30 days period:");
+                        var seriesModificationTime = chart.Series.Add("Modification time");
+                        seriesModificationTime.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bubble;
+                        foreach (CacheModel data in perviousFileData)
+                        {
+                            seriesModificationTime.Points.AddXY(data.DateCached.Split('_').ToList().Skip(1).ToList().Aggregate((x, y) => x + "-" + y), data.LastAccessTime);
+                        }
+                        foreach (var point in seriesModificationTime.Points)
+                        {
+                            point.ToolTip = "#VAL";
+                        }
                         break;
 
                     default:
@@ -81,7 +127,6 @@ namespace FileForensiq.UI
             }
             catch (Exception)
             {
-
             }
         }
 

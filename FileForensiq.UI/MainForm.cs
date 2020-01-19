@@ -1,6 +1,7 @@
 ﻿using FileForensiq.Core;
 using FileForensiq.Core.Models;
 using FileForensiq.Database;
+using FileForensiq.Database.Models;
 using FileForensiq.UI.Helpers;
 using Newtonsoft.Json;
 using System;
@@ -19,11 +20,13 @@ namespace FileForensiq.UI
     {
         private readonly FileSystemManipulation filesManipulation;
         private readonly DatabaseHelper database;
+        private CacheModel forDisplayFile;
 
         private bool sortDescending = true;
 
         private ErrorForm ef;
         private FilterForm ff;
+        private GraphicForm gf;
 
         public ErrorForm ErrorForm {
             get
@@ -52,6 +55,22 @@ namespace FileForensiq.UI
                 else
                 {
                     return ff;
+                }
+            }
+        }
+
+        public GraphicForm GraphicForm
+        {
+            get
+            {
+                if (gf == null || gf.IsDisposed)
+                {
+                    gf = new GraphicForm(cbxPartitionLetters.SelectedItem.ToString().Substring(0, 1).ToLower(), forDisplayFile);
+                    return gf;
+                }
+                else
+                {
+                    return gf;
                 }
             }
         }
@@ -93,6 +112,50 @@ namespace FileForensiq.UI
         private void btnStatistics_Click(object sender, EventArgs e)
         {
             FilterForm.Show();
+        }
+
+        private void btnShowStatistics_Click(object sender, EventArgs e)
+        {
+            var selectedNode = tvFileSystem.SelectedNode;
+            if (selectedNode == null)
+            {
+                return;
+            }
+
+            if (selectedNode is DirectoryTreeNode)
+            {
+                var info = selectedNode.Tag as DirectoryInfo;
+
+                forDisplayFile = new CacheModel()
+                {
+                    CreationTime = info.CreationTime,
+                    Extension = "folder",
+                    LastAccessTime = info.LastAccessTime,
+                    LastModificationTime = info.LastWriteTime,
+                    Name = info.FullName.Replace('\\', '/'),
+                    NumberOfFiles = (selectedNode as DirectoryTreeNode).NumberOfFiles,
+                    Size = (selectedNode as DirectoryTreeNode).Size
+                };
+
+                GraphicForm.Show();
+            }
+            else //Is file
+            {
+                var info = selectedNode.Tag as FileInfo;
+
+                forDisplayFile = new CacheModel()
+                {
+                    CreationTime = info.CreationTime,
+                    Extension = info.Extension.Split('.')[1],
+                    LastAccessTime = info.LastAccessTime,
+                    LastModificationTime = info.LastWriteTime,
+                    Name = info.FullName.Replace('\\', '/'),
+                    NumberOfFiles = 0,
+                    Size = info.Length
+                };
+
+                GraphicForm.Show();
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -166,10 +229,14 @@ namespace FileForensiq.UI
             if (selectedNode is DirectoryTreeNode)
             {
                 ShowDirectoryFileDetails(true, selectedNode);
+                btnShowDeletedFiles.Visible = true;
+                btnShowStatistics.Visible = true;
             }
             else //Is file
             {
                 ShowDirectoryFileDetails(false, selectedNode);
+                btnShowStatistics.Visible = true;
+                btnShowDeletedFiles.Visible = false;
             }
         }
 
@@ -257,7 +324,6 @@ namespace FileForensiq.UI
                 }
             }
         }
-
 
         #endregion
 
@@ -578,8 +644,7 @@ namespace FileForensiq.UI
             }
         }
 
-        #endregion
 
-        
+        #endregion
     }
 }

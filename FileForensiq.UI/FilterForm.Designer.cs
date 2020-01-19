@@ -43,11 +43,13 @@
             this.cbxFilterOptions = new System.Windows.Forms.ComboBox();
             this.dgvFiles = new System.Windows.Forms.DataGridView();
             this.gbxFiles = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.lblNumberOfFiles = new System.Windows.Forms.Label();
             this.lblNumOfFiles = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
             this.lblErrorLabel = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.tbxSearch = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.gbxTimePeriod.SuspendLayout();
             this.gbxFileType.SuspendLayout();
             this.gbxFilterOptions.SuspendLayout();
@@ -192,7 +194,7 @@
             this.dgvFiles.AllowUserToResizeRows = false;
             this.dgvFiles.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvFiles.Location = new System.Drawing.Point(13, 19);
+            this.dgvFiles.Location = new System.Drawing.Point(13, 51);
             this.dgvFiles.Name = "dgvFiles";
             this.dgvFiles.ReadOnly = true;
             this.dgvFiles.RowHeadersVisible = false;
@@ -205,21 +207,32 @@
             // 
             // gbxFiles
             // 
+            this.gbxFiles.Controls.Add(this.label2);
+            this.gbxFiles.Controls.Add(this.tbxSearch);
             this.gbxFiles.Controls.Add(this.label1);
             this.gbxFiles.Controls.Add(this.lblNumberOfFiles);
             this.gbxFiles.Controls.Add(this.lblNumOfFiles);
             this.gbxFiles.Controls.Add(this.dgvFiles);
             this.gbxFiles.Location = new System.Drawing.Point(12, 99);
             this.gbxFiles.Name = "gbxFiles";
-            this.gbxFiles.Size = new System.Drawing.Size(580, 338);
+            this.gbxFiles.Size = new System.Drawing.Size(580, 373);
             this.gbxFiles.TabIndex = 17;
             this.gbxFiles.TabStop = false;
             this.gbxFiles.Text = "Files:";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(344, 347);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(224, 13);
+            this.label1.TabIndex = 19;
+            this.label1.Text = "*Double Click on any row to open file statistics";
+            // 
             // lblNumberOfFiles
             // 
             this.lblNumberOfFiles.AutoSize = true;
-            this.lblNumberOfFiles.Location = new System.Drawing.Point(97, 315);
+            this.lblNumberOfFiles.Location = new System.Drawing.Point(97, 347);
             this.lblNumberOfFiles.Name = "lblNumberOfFiles";
             this.lblNumberOfFiles.Size = new System.Drawing.Size(42, 13);
             this.lblNumberOfFiles.TabIndex = 18;
@@ -229,7 +242,7 @@
             // lblNumOfFiles
             // 
             this.lblNumOfFiles.AutoSize = true;
-            this.lblNumOfFiles.Location = new System.Drawing.Point(10, 315);
+            this.lblNumOfFiles.Location = new System.Drawing.Point(10, 347);
             this.lblNumOfFiles.Name = "lblNumOfFiles";
             this.lblNumOfFiles.Size = new System.Drawing.Size(85, 13);
             this.lblNumOfFiles.TabIndex = 17;
@@ -256,20 +269,28 @@
             this.lblErrorLabel.Text = "                 Error occurred! \r\nCheck Error Log for more information.";
             this.lblErrorLabel.Visible = false;
             // 
-            // label1
+            // tbxSearch
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(344, 315);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(224, 13);
-            this.label1.TabIndex = 19;
-            this.label1.Text = "*Double Click on any row to open file statistics";
+            this.tbxSearch.Location = new System.Drawing.Point(60, 22);
+            this.tbxSearch.Name = "tbxSearch";
+            this.tbxSearch.Size = new System.Drawing.Size(126, 20);
+            this.tbxSearch.TabIndex = 20;
+            this.tbxSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbxSearch_KeyPress);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(10, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 13);
+            this.label2.TabIndex = 21;
+            this.label2.Text = "Search:";
             // 
             // FilterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(785, 449);
+            this.ClientSize = new System.Drawing.Size(785, 484);
             this.Controls.Add(this.lblErrorLabel);
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.gbxFiles);
@@ -317,5 +338,7 @@
         private System.Windows.Forms.Label lblNumOfFiles;
         private System.Windows.Forms.Label lblErrorLabel;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbxSearch;
     }
 }

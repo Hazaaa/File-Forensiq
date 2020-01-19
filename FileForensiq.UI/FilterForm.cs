@@ -16,6 +16,7 @@ namespace FileForensiq.UI
     {
         private string selectedDrive;
         private DatabaseHelper database;
+        private List<CacheModel> retrievedData;
 
         public enum FilterOptions
         {
@@ -107,6 +108,17 @@ namespace FileForensiq.UI
             GraphicForm.Show();
         }
 
+        private void tbxSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (retrievedData == null || retrievedData.Count == 0)
+                return;
+
+            dgvFiles.DataSource = retrievedData.Where(x => x.Name.Contains(tbxSearch.Text)).ToList();
+            dgvFiles.Update();
+            dgvFiles.Refresh();
+            lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+        }
+
         #endregion
 
         #region Helpers
@@ -151,7 +163,8 @@ namespace FileForensiq.UI
         {
             try
             {
-                dgvFiles.DataSource = database.GetAllFiles(selectedDrive, selectedTypes).Distinct(new CacheModelComaparer()).ToList();
+                retrievedData = database.GetAllFiles(selectedDrive, selectedTypes).Distinct(new CacheModelComaparer()).ToList();
+                dgvFiles.DataSource = retrievedData;
                 SetUpDataGridViewColumnsSettings();
                 lblNumberOfFiles.Visible = true;
                 lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();

@@ -202,7 +202,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.cbxGraphicOptions);
-            this.groupBox1.Location = new System.Drawing.Point(12, 146);
+            this.groupBox1.Location = new System.Drawing.Point(11, 140);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(170, 64);
             this.groupBox1.TabIndex = 16;
@@ -227,18 +227,19 @@
             // chart
             // 
             this.chart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.chart.BorderlineColor = System.Drawing.Color.Black;
             chartArea1.Name = "ChartArea1";
             this.chart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.chart.Legends.Add(legend1);
-            this.chart.Location = new System.Drawing.Point(212, 146);
+            this.chart.Location = new System.Drawing.Point(189, 146);
             this.chart.Name = "chart";
-            this.chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.EarthTones;
+            this.chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Pastel;
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chart.Series.Add(series1);
-            this.chart.Size = new System.Drawing.Size(546, 300);
+            this.chart.Size = new System.Drawing.Size(569, 300);
             this.chart.TabIndex = 17;
             this.chart.Text = "chart";
             // 
