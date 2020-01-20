@@ -224,7 +224,17 @@ namespace FileForensiq.Database
 
                     foreach (var table in tableNames)
                     {
-                        string query = "SELECT * FROM " + table + " WHERE Extension IN @types;";
+                        string query = "";
+
+                        if (types.Any(x => x == "All"))
+                        {
+                            query = "SELECT * FROM " + table;
+                        }
+                        else
+                        {
+                             query = "SELECT * FROM " + table + " WHERE Extension IN @types;";
+                        }
+                       
 
                         result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
                     }
@@ -264,15 +274,32 @@ namespace FileForensiq.Database
                     foreach (var table in tableNames)
                     {
                         string query = "";
-                        if(to == null)
+
+                        if(types.Any(x => x == "All"))
                         {
-                            query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}' AND Extension IN {4}", table, columnName, from.ToString("yyyy/MM/dd"), from.AddHours(24).ToString("yyyy/MM/dd"), "@types");
-                            result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                            if (to == null)
+                            {
+                                query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}'", table, columnName, from.ToString("yyyy/MM/dd"), from.AddHours(24).ToString("yyyy/MM/dd"));
+                                result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                            }
+                            else
+                            {
+                                query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}'", table, columnName, from.ToString("yyyy/MM/dd"), to?.AddHours(24).ToString("yyyy/MM/dd"));
+                                result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                            }
                         }
                         else
                         {
-                            query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}' AND Extension IN {4}", table, columnName, from.ToString("yyyy/MM/dd"), to?.AddHours(24).ToString("yyyy/MM/dd"), "@types");
-                            result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                            if (to == null)
+                            {
+                                query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}' AND Extension IN {4}", table, columnName, from.ToString("yyyy/MM/dd"), from.AddHours(24).ToString("yyyy/MM/dd"), "@types");
+                                result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                            }
+                            else
+                            {
+                                query = String.Format("SELECT * FROM {0} WHERE Convert(date,{1}) BETWEEN '{2}' AND '{3}' AND Extension IN {4}", table, columnName, from.ToString("yyyy/MM/dd"), to?.AddHours(24).ToString("yyyy/MM/dd"), "@types");
+                                result.AddRange(connection.Query<CacheModel>(query, new { types }).ToList());
+                            }
                         }  
                     }
 
@@ -326,6 +353,138 @@ namespace FileForensiq.Database
                 catch (Exception ex)
                 {
                     ErrorLogger.LogError("Error while retriving files: " + ex.Message);
+                    throw;
+                }
+                finally
+                {
+                    // Always close connection
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns all files deleted in folder for sepcific period of time.
+        /// </summary>
+        /// <param name="tableLetter">Drive letter.</param>
+        /// <param name="folderName">Folder for which deleted files are returned.</param>
+        public List<CacheModel> GetDeletedFilesForFolder(string tableLetter, string folderName, List<string> types, DateTime from, DateTime? to = null)
+        {
+            using (IDbConnection connection = new SqlConnection(DatabaseConfig.ConnectionString("FileForensiqDB")))
+            {
+                try
+                {
+                    connection.Open();
+
+                    List<CacheModel> result = new List<CacheModel>();
+                    List<CacheModel> tempResult = new List<CacheModel>();
+
+                    List<string> tableNames = new List<string>();
+
+                    tableNames.AddRange(GetAllTableNames(tableLetter, connection));
+
+                    if(to == null)
+                    {
+                        var date = tableLetter + "_" + from.ToString("d_M_yyyy");
+
+                        tableNames = tableNames.Where(x => x == date).ToList();
+                    }
+                    else
+                    {
+                        var dates = new List<string>();
+
+                        for (var dt = from; dt <= to; dt = dt.AddDays(1))
+                        {
+                            dates.Add(tableLetter + "_" + dt.ToString("d_M_yyyy"));
+                        }
+
+                        tableNames = tableNames.Where(x => dates.Contains(x)).ToList();
+                    }
+
+                    foreach (var table in tableNames)
+                    {
+                        string query = "";
+
+                        if(String.IsNullOrEmpty(folderName))
+                        {
+                            if (types.Any(x => x == "All"))
+                            {
+                                query = String.Format("SELECT * FROM {0}", table);
+                                var tmpResult = connection.Query<CacheModel>(query).ToList();
+
+                                // Finding files/folders that aren't in data from pervious day that are in tempResult
+                                if(tempResult.Count == 0)
+                                {
+                                    tempResult = tmpResult;
+                                } 
+                                else
+                                {
+                                    result.AddRange(tempResult.Where(x => tmpResult.All(y => y.Name != x.Name)).ToList());
+                                    tempResult.Clear();
+                                    tempResult = tmpResult;
+                                }
+                            }
+                            else
+                            {
+                                query = String.Format("SELECT * FROM {0} WHERE Extension IN {1}", table, "@types");
+                                var tmpResult = connection.Query<CacheModel>(query, new { types }).ToList();
+
+                                if (tempResult.Count == 0)
+                                {
+                                    tempResult = tmpResult;
+                                }
+                                else
+                                {
+                                    result.AddRange(tempResult.Where(x => tmpResult.All(y => y.Name != x.Name)).ToList());
+                                    tempResult.Clear();
+                                    tempResult = tmpResult;
+                                } 
+                            }
+                        }
+                        else
+                        {
+                            if (types.Any(x => x == "All"))
+                            {
+                                query = "SELECT * FROM " + table + " WHERE Name LIKE '%" + folderName + "%'";
+                                var tmpResult = connection.Query<CacheModel>(query).ToList();
+
+                                // Finding files/folders that aren't in data from pervious day that are in tempResult
+                                if (tempResult.Count == 0)
+                                {
+                                    tempResult = tmpResult;
+                                }
+                                else
+                                {
+                                    result.AddRange(tempResult.Where(x => tmpResult.All(y => y.Name != x.Name)).ToList());
+                                    tempResult.Clear();
+                                    tempResult = tmpResult;
+                                }
+                            }
+                            else
+                            {
+                                query = "SELECT * FROM " + table + " WHERE Name LIKE '%" + folderName + "%' AND Extension IN @types";
+                                var tmpResult = connection.Query<CacheModel>(query, new { types }).ToList();
+
+                                if (tempResult.Count == 0)
+                                {
+                                    tempResult = tmpResult;
+                                }
+                                else
+                                {
+                                    result.AddRange(tempResult.Where(x => tmpResult.All(y => y.Name != x.Name)).ToList());
+                                    tempResult.Clear();
+                                    tempResult = tmpResult;
+                                }
+                            }
+                        }
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogger.LogError("Error while retriving deleted files: " + ex.Message);
                     throw;
                 }
                 finally

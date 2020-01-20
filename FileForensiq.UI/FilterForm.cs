@@ -18,12 +18,15 @@ namespace FileForensiq.UI
         private DatabaseHelper database;
         private List<CacheModel> retrievedData;
 
+        public CacheModel RecievedFolder { get; set; }
+
         public enum FilterOptions
         {
             ShowAll,
             TimeCreated,
             LastModifyTime,
-            LastAccessTime
+            LastAccessTime,
+            DeletedFiles
         }
 
         public enum FilterPeriod
@@ -51,6 +54,24 @@ namespace FileForensiq.UI
             }
         }
 
+        private ChartForm cf;
+
+        public ChartForm ChartForm
+        {
+            get
+            {
+                if (cf == null || cf.IsDisposed)
+                {
+                    cf = new ChartForm((List<CacheModel>)dgvFiles.DataSource);
+                    return cf;
+                }
+                else
+                {
+                    return cf;
+                }
+            }
+        }
+
         public FilterForm()
         {
             InitializeComponent();
@@ -71,6 +92,11 @@ namespace FileForensiq.UI
             PopulateFileTypeCombobox();
             SetUpDateTimePickers();
             gbxTimePeriod.Enabled = false;
+
+            if(RecievedFolder != null)
+            {
+                cbxFilterOptions.SelectedIndex = (int)FilterOptions.DeletedFiles;
+            }
         }
 
         private void cbxFilterOptions_SelectedIndexChanged(object sender, EventArgs e)
@@ -106,6 +132,11 @@ namespace FileForensiq.UI
         private void dgvFiles_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             GraphicForm.Show();
+        }
+
+        private void btnShowStatistics_Click(object sender, EventArgs e)
+        {
+            ChartForm.Show();
         }
 
         private void tbxSearch_KeyPress(object sender, KeyPressEventArgs e)
@@ -154,6 +185,9 @@ namespace FileForensiq.UI
                     ShowFilesByPeriodOfTime("LastAccessTime", selectedPeriod, selectedDateFrom, selectedDateTo, selectedTypes);
                     break;
 
+                case FilterOptions.DeletedFiles:
+                    ShowDeletedFiles(selectedPeriod, selectedDateFrom, selectedDateTo, selectedTypes);
+                    break;
                 default:
                     break;
             }
@@ -198,7 +232,45 @@ namespace FileForensiq.UI
                 lblErrorLabel.Visible = true;
             }
         }
-        
+
+        public void ShowDeletedFiles(FilterPeriod selectedPeriod, DateTime selectedDateFrom, DateTime selectedDateTo, List<string> selectedTypes) 
+        {
+            try
+            {
+                switch (selectedPeriod)
+                {
+                    case FilterPeriod.ForDay:
+                        if(RecievedFolder == null)
+                        {
+                            dgvFiles.DataSource = database.GetDeletedFilesForFolder(selectedDrive, null, selectedTypes, selectedDateFrom);
+                        }
+                        else
+                        {
+                            dgvFiles.DataSource = database.GetDeletedFilesForFolder(selectedDrive, RecievedFolder.Name, selectedTypes, selectedDateFrom);
+                        }
+                        break;
+                    default:
+                        if(RecievedFolder == null)
+                        {
+                            dgvFiles.DataSource = database.GetDeletedFilesForFolder(selectedDrive, null, selectedTypes, selectedDateFrom, selectedDateTo);
+                        }
+                        else
+                        {
+                            dgvFiles.DataSource = database.GetDeletedFilesForFolder(selectedDrive, RecievedFolder.Name, selectedTypes, selectedDateFrom, selectedDateTo);
+                        }
+                        break;
+                }
+
+                SetUpDataGridViewColumnsSettings();
+                lblNumberOfFiles.Visible = true;
+                lblNumberOfFiles.Text = dgvFiles.Rows.Count.ToString();
+            }
+            catch (Exception)
+            {
+                lblErrorLabel.Visible = true;
+            }
+        }
+
         public void SetUpDataGridViewColumnsSettings()
         {
             foreach (var column in dgvFiles.Columns.Cast<DataGridViewColumn>().ToList())
@@ -235,11 +307,11 @@ namespace FileForensiq.UI
         public void SetUpDateTimePickers()
         {
             dtpPeriodFrom.MinDate = DateTime.Now.AddYears(-10);
-            dtpPeriodFrom.MaxDate = DateTime.Now;
             dtpPeriodFrom.Value = DateTime.Now;
+            dtpPeriodFrom.MaxDate = DateTime.Now;
             dtpPeriodTo.MinDate = DateTime.Now.AddYears(-10);
-            dtpPeriodTo.MaxDate = DateTime.Now;
             dtpPeriodTo.Value = DateTime.Now;
+            dtpPeriodTo.MaxDate = DateTime.Now;
         }
 
         public void SetComboboxesForFilterOptions()

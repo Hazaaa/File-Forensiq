@@ -158,6 +158,34 @@ namespace FileForensiq.UI
             }
         }
 
+        private void btnShowDeletedFiles_Click(object sender, EventArgs e)
+        {
+            var selectedNode = tvFileSystem.SelectedNode;
+            if (selectedNode == null)
+            {
+                return;
+            }
+
+            if (selectedNode is DirectoryTreeNode)
+            {
+                var info = selectedNode.Tag as DirectoryInfo;
+
+                forDisplayFile = new CacheModel()
+                {
+                    CreationTime = info.CreationTime,
+                    Extension = "folder",
+                    LastAccessTime = info.LastAccessTime,
+                    LastModificationTime = info.LastWriteTime,
+                    Name = info.FullName.Replace('\\', '/'),
+                    NumberOfFiles = (selectedNode as DirectoryTreeNode).NumberOfFiles,
+                    Size = (selectedNode as DirectoryTreeNode).Size
+                };
+
+                FilterForm.RecievedFolder = forDisplayFile;
+                FilterForm.Show();
+            }
+        }
+
         private void btnSearch_Click(object sender, EventArgs e)
         {
             try

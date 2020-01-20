@@ -41,6 +41,8 @@
             this.lblSortArrow = new System.Windows.Forms.Label();
             this.btnErrorLog = new System.Windows.Forms.Button();
             this.pnlFolderDetails = new System.Windows.Forms.Panel();
+            this.btnShowStatistics = new System.Windows.Forms.Button();
+            this.btnShowDeletedFiles = new System.Windows.Forms.Button();
             this.lblFolderFileType = new System.Windows.Forms.Label();
             this.lblTypeLabel = new System.Windows.Forms.Label();
             this.lblFolderFileLastModify = new System.Windows.Forms.Label();
@@ -68,8 +70,6 @@
             this.lblServerStatus = new System.Windows.Forms.Label();
             this.btnCheckServerStatus = new System.Windows.Forms.Button();
             this.btnStatistics = new System.Windows.Forms.Button();
-            this.btnShowDeletedFiles = new System.Windows.Forms.Button();
-            this.btnShowStatistics = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.pnlFolderDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFiles)).BeginInit();
@@ -245,6 +245,30 @@
             this.pnlFolderDetails.Name = "pnlFolderDetails";
             this.pnlFolderDetails.Size = new System.Drawing.Size(388, 118);
             this.pnlFolderDetails.TabIndex = 14;
+            // 
+            // btnShowStatistics
+            // 
+            this.btnShowStatistics.Location = new System.Drawing.Point(9, 88);
+            this.btnShowStatistics.Name = "btnShowStatistics";
+            this.btnShowStatistics.Size = new System.Drawing.Size(27, 23);
+            this.btnShowStatistics.TabIndex = 23;
+            this.btnShowStatistics.Text = "🖻 ";
+            this.toolTip.SetToolTip(this.btnShowStatistics, "Graphic Display Information\r\n");
+            this.btnShowStatistics.UseVisualStyleBackColor = true;
+            this.btnShowStatistics.Visible = false;
+            this.btnShowStatistics.Click += new System.EventHandler(this.btnShowStatistics_Click);
+            // 
+            // btnShowDeletedFiles
+            // 
+            this.btnShowDeletedFiles.Location = new System.Drawing.Point(42, 88);
+            this.btnShowDeletedFiles.Name = "btnShowDeletedFiles";
+            this.btnShowDeletedFiles.Size = new System.Drawing.Size(27, 23);
+            this.btnShowDeletedFiles.TabIndex = 22;
+            this.btnShowDeletedFiles.Text = "✘";
+            this.toolTip.SetToolTip(this.btnShowDeletedFiles, "Show Deleted Files");
+            this.btnShowDeletedFiles.UseVisualStyleBackColor = true;
+            this.btnShowDeletedFiles.Visible = false;
+            this.btnShowDeletedFiles.Click += new System.EventHandler(this.btnShowDeletedFiles_Click);
             // 
             // lblFolderFileType
             // 
@@ -523,29 +547,6 @@
             this.btnStatistics.Text = "🔍 Filter";
             this.btnStatistics.UseVisualStyleBackColor = true;
             this.btnStatistics.Click += new System.EventHandler(this.btnStatistics_Click);
-            // 
-            // btnShowDeletedFiles
-            // 
-            this.btnShowDeletedFiles.Location = new System.Drawing.Point(42, 88);
-            this.btnShowDeletedFiles.Name = "btnShowDeletedFiles";
-            this.btnShowDeletedFiles.Size = new System.Drawing.Size(27, 23);
-            this.btnShowDeletedFiles.TabIndex = 22;
-            this.btnShowDeletedFiles.Text = "✘";
-            this.toolTip.SetToolTip(this.btnShowDeletedFiles, "Show Deleted Files");
-            this.btnShowDeletedFiles.UseVisualStyleBackColor = true;
-            this.btnShowDeletedFiles.Visible = false;
-            // 
-            // btnShowStatistics
-            // 
-            this.btnShowStatistics.Location = new System.Drawing.Point(9, 88);
-            this.btnShowStatistics.Name = "btnShowStatistics";
-            this.btnShowStatistics.Size = new System.Drawing.Size(27, 23);
-            this.btnShowStatistics.TabIndex = 23;
-            this.btnShowStatistics.Text = "🖻 ";
-            this.toolTip.SetToolTip(this.btnShowStatistics, "Graphic Display Information\r\n");
-            this.btnShowStatistics.UseVisualStyleBackColor = true;
-            this.btnShowStatistics.Visible = false;
-            this.btnShowStatistics.Click += new System.EventHandler(this.btnShowStatistics_Click);
             // 
             // MainForm
             // 

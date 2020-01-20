@@ -62,7 +62,6 @@ namespace FileForensiq.UI
                         var seriesSize = chart.Series.Add("Size");
                         seriesSize.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
                         seriesSize.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-                        seriesSize.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
                         seriesSize.MarkerSize = 10;
                         foreach (CacheModel data in perviousFileData)
                         {

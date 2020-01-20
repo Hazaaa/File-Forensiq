@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterForm));
             this.clbFileTypes = new System.Windows.Forms.CheckedListBox();
             this.dtpPeriodFrom = new System.Windows.Forms.DateTimePicker();
@@ -43,13 +44,15 @@
             this.cbxFilterOptions = new System.Windows.Forms.ComboBox();
             this.dgvFiles = new System.Windows.Forms.DataGridView();
             this.gbxFiles = new System.Windows.Forms.GroupBox();
+            this.btnShowStatistics = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tbxSearch = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.lblNumberOfFiles = new System.Windows.Forms.Label();
             this.lblNumOfFiles = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
             this.lblErrorLabel = new System.Windows.Forms.Label();
-            this.tbxSearch = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.gbxTimePeriod.SuspendLayout();
             this.gbxFileType.SuspendLayout();
             this.gbxFilterOptions.SuspendLayout();
@@ -179,7 +182,8 @@
             "Show All",
             "Time Created",
             "Last Modify Time",
-            "Last Access Time"});
+            "Last Access Time",
+            "Deleted Files"});
             this.cbxFilterOptions.Location = new System.Drawing.Point(6, 43);
             this.cbxFilterOptions.Name = "cbxFilterOptions";
             this.cbxFilterOptions.Size = new System.Drawing.Size(121, 21);
@@ -207,6 +211,7 @@
             // 
             // gbxFiles
             // 
+            this.gbxFiles.Controls.Add(this.btnShowStatistics);
             this.gbxFiles.Controls.Add(this.label2);
             this.gbxFiles.Controls.Add(this.tbxSearch);
             this.gbxFiles.Controls.Add(this.label1);
@@ -219,6 +224,34 @@
             this.gbxFiles.TabIndex = 17;
             this.gbxFiles.TabStop = false;
             this.gbxFiles.Text = "Files:";
+            // 
+            // btnShowStatistics
+            // 
+            this.btnShowStatistics.Location = new System.Drawing.Point(541, 20);
+            this.btnShowStatistics.Name = "btnShowStatistics";
+            this.btnShowStatistics.Size = new System.Drawing.Size(27, 23);
+            this.btnShowStatistics.TabIndex = 24;
+            this.btnShowStatistics.Text = "🖻 ";
+            this.toolTip.SetToolTip(this.btnShowStatistics, "Chart display");
+            this.btnShowStatistics.UseVisualStyleBackColor = true;
+            this.btnShowStatistics.Click += new System.EventHandler(this.btnShowStatistics_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(10, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 13);
+            this.label2.TabIndex = 21;
+            this.label2.Text = "Search:";
+            // 
+            // tbxSearch
+            // 
+            this.tbxSearch.Location = new System.Drawing.Point(60, 22);
+            this.tbxSearch.Name = "tbxSearch";
+            this.tbxSearch.Size = new System.Drawing.Size(126, 20);
+            this.tbxSearch.TabIndex = 20;
+            this.tbxSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbxSearch_KeyPress);
             // 
             // label1
             // 
@@ -268,23 +301,6 @@
             this.lblErrorLabel.TabIndex = 19;
             this.lblErrorLabel.Text = "                 Error occurred! \r\nCheck Error Log for more information.";
             this.lblErrorLabel.Visible = false;
-            // 
-            // tbxSearch
-            // 
-            this.tbxSearch.Location = new System.Drawing.Point(60, 22);
-            this.tbxSearch.Name = "tbxSearch";
-            this.tbxSearch.Size = new System.Drawing.Size(126, 20);
-            this.tbxSearch.TabIndex = 20;
-            this.tbxSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbxSearch_KeyPress);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 13);
-            this.label2.TabIndex = 21;
-            this.label2.Text = "Search:";
             // 
             // FilterForm
             // 
@@ -340,5 +356,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbxSearch;
+        private System.Windows.Forms.Button btnShowStatistics;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
